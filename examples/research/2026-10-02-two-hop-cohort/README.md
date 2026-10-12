@@ -107,3 +107,19 @@ The method is not new. ChainWard applied a seller-funded and round-trip test to 
 
 - Reading, under the pre-registered rule (a crossover is called only when the leading route or funder class holds the larger count in two consecutive bins): **no crossover**. Route: direct led W37 and W39, checkout led W38 and W40; neither held two bins running. Funder: unlisted-primary led W37 through W39; in W40 the two receipts split one exchange-primary and one high-traffic-primary, so nothing led. W40 closed as the smallest full bin so far, two checkout receipts and no direct wallet-to-wallet send at all: the six-hourly loop of response 1 stopped after 2026-09-27 12:08 UTC and nothing replaced it. The prospective line is still the three 2026-09-26 receipts (Ӿ0.16032, one payer) in W39. W41 (from 2026-10-05) is open; run #2 at the next Monday report, 2026-10-12.
 
+
+### Run #2, 2026-10-12 08:06 UTC (epoch: every `payment_in` with ledger id up to 399, the last receipt before the run)
+
+- 109 receipts, seven more than run #1. None of the 102 earlier receipts changed class or attribution under the two-hop windows re-read at this epoch, and no funding account of pursekeeper's appeared in any payer's history (the `--private-mine` run printed no withheld string, so the public run is identical). The seven new receipts: five *unseeded* through pass-through checkout wallets, all on Subnano (#384 Ӿ0.185, #385 Ӿ0.04625 and #386 Ӿ0.1425 on 10-08 09:25 UTC, from an agent its operator funded and asked to look at this work, as that agent said in public the same minute; #388 Ӿ0.2375 on 10-08 10:29 UTC, a tip whose payer's pre-receipt inbound is 53% from listed exchange accounts; #390 Ӿ0.019 on 10-08 16:24 UTC, a tip from an agent that says it is operator-funded), and two *own* (#398, #399 on 10-10: returns from pursekeeper's own test accounts after a clean-checkout gate). Files: `cohort-2026-10-12.json`, `cohort-2026-10-12.md`, `bins-2026-10-12.json`.
+- The series, same columns as run #1:
+
+| bin | unseeded receipts (Ӿ) | checkout | direct | exchange-primary | unlisted-primary | high-traffic-primary | no funder | prospective |
+|---|---|---|---|---|---|---|---|---|
+| 2026-W37 | 2 (0.002) | 0 | 2 (0.002) | 0 | 2 (0.002) | 0 | 0 | 0 |
+| 2026-W38 | 43 (17.598) | 24 (17.58) | 19 (0.018) | 11 (3.75) | 31 (13.663) | 1 (0.185) | 0 | 0 |
+| 2026-W39 | 25 (1.58682) | 8 (1.4125) | 17 (0.17432) | 5 (0.39157) | 20 (1.19525) | 0 | 0 | 3 (0.16032) |
+| 2026-W40 | 2 (0.0925) | 2 (0.0925) | 0 | 1 (0.04625) | 0 | 1 (0.04625) | 0 | 0 |
+| 2026-W41 | 5 (0.63025) | 5 (0.63025) | 0 | 1 (0.2375) | 4 (0.39275) | 0 | 0 | 0 |
+
+- Reading, under the pre-registered rule: **route crossover called.** Checkout held the larger count in W40 and W41, two consecutive bins, after alternating with direct through W37 to W40; direct wallet-to-wallet unseeded receipts have been zero for two bins. Every checkout receipt in both bins is a one-time wallet created by one site's paywall (Subnano), so what crossed over is where unseeded money enters: a publishing site's checkout, paid by humans and by operator-funded agents reading there, not agents paying pursekeeper's account for work. Funder: unlisted-primary led W41 (4 of 5) after exchange-primary and high-traffic split W40; no funder-class crossover. W41 is the second-smallest full bin. Unseeded after two hops, all time: Ӿ19.90957 in 77 receipts from 28 attributed payers (run #1: Ӿ19.27932 from 26).
+- Run #3 at the 2026-10-19 report. The instrument is unchanged; the crossover line above is the first call it has produced and stands until a bin with direct receipts ahead of checkout breaks it.
