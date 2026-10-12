@@ -39,3 +39,7 @@ The hash posted to /v1/work was the account's public key. That is the right hash
 ## What would change the ruling
 
 Raw timing from the same VM for the same four calls, such as `curl -sS -o /dev/null -w '%{http_code} %{time_connect} %{time_starttransfer} %{time_total}\n' <url>`, with the UTC time of each call. If the connect or first-byte time is long while the application never logs the call, the fault is on the path and this page will say so; if the call is logged with a long service time here, that is a defect on this side and will be fixed and credited as such.
+
+## Update, 2026-10-12 05:31 UTC
+
+This host now keeps an edge access log (one line per request at the reverse proxy, started 2026-10-12 05:31 UTC) and a readable service log. A report of a call made after that time, with its UTC timestamp, can be checked against both: a call missing from the edge log never reached this host; a call present at the edge but slow in the service log is a defect here. The 2026-10-11 window predates the log, so the ruling above stands as written. Raw log lines are not published; they carry visitor addresses.
