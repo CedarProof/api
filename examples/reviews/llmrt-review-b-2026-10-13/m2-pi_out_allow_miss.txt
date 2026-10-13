@@ -1,0 +1,33 @@
+=== PI CASE allow_miss ===
+--- pi invocation (proxy as base URL, PROXY_KEY as the API key)
+402: {"message":"inference-proxy refused: payto_not_allowed {\"payTo\":\"nano_1zow151ycd1xcdt5h911dxmb5frpowk5z63fus6ycwghk9p7rzoyemirsiwk\"}","type":"nano_payer_refused","code":"payto_not_allowed"}
+
+--- proxy state (spent must be 0 for a refused case)
+{
+ "account": "nano_1ridzu39y48ciqe14e9imztjfh8benjmuanho3jkk4i567fyg7do57ry8md4",
+ "upstream": "http://127.0.0.1:3403",
+ "cap": "0.01",
+ "per_call_limit": "0.001",
+ "spent": "0",
+ "remaining": "0.01",
+ "received": "0",
+ "calls": 1,
+ "paid": 0,
+ "refused": 1,
+ "allow_payto": [
+  "nano_11131a3ia3a81w61k4id3i8iw5ri46b3871o4rdji8at5eg3t9izij86w3hz"
+ ],
+ "refusals": [
+  {
+   "t": "2026-10-13T11:25:22.025Z",
+   "code": "payto_not_allowed",
+   "detail": {
+    "payTo": "nano_1zow151ycd1xcdt5h911dxmb5frpowk5z63fus6ycwghk9p7rzoyemirsiwk"
+   },
+   "path": "/v1/chat/completions"
+  }
+ ],
+ "payments": [],
+ "receipts": []
+}
+

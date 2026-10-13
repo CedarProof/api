@@ -1,0 +1,54 @@
+=== stream:true through the proxy, door answers with a plain completion ===
+--- raw SSE lines (headers + body)
+curl: (7) Failed to connect to 127.0.0.1 port 3402 after 0 ms: Could not connect to server
+
+--- proxy state
+curl: (7) Failed to connect to 127.0.0.1 port 3402 after 0 ms: Could not connect to server
+
+=== stream:true through the proxy, door answers with a plain completion ===
+--- raw SSE lines (headers + body)
+HTTP/1.1 200 OK
+x-payer-paid: 0.00001
+x-payer-hash: 2FCF731248AFF34A9E5B2B1CCF77B5558A847F174DBE24DA76FD8E464F97CF5D
+content-type: text/event-stream
+x-payer-stream: buffered
+cache-control: no-cache
+Date: Tue, 13 Oct 2026 11:24:43 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+Transfer-Encoding: chunked
+
+data: {"id":"chatcmpl-mock","object":"chat.completion.chunk","created":1,"model":"gpt-5-nano","usage":{"prompt_tokens":1,"completion_tokens":1,"total_tokens":2},"choices":[{"index":0,"delta":{"role":"assistant","content":"calling a tool","tool_calls":[{"index":0,"id":"call_1","type":"function","function":{"name":"read_file","arguments":"{\"path\":\"a.txt\"}"}}]},"finish_reason":"tool_calls"}]}
+
+data: [DONE]
+
+
+--- proxy state
+{
+ "account": "nano_1ridzu39y48ciqe14e9imztjfh8benjmuanho3jkk4i567fyg7do57ry8md4",
+ "upstream": "http://127.0.0.1:3404",
+ "cap": "0.01",
+ "per_call_limit": "0.001",
+ "spent": "0.00001",
+ "remaining": "0.00999",
+ "received": "0",
+ "calls": 1,
+ "paid": 1,
+ "refused": 0,
+ "allow_payto": [],
+ "refusals": [],
+ "payments": [
+  {
+   "t": "2026-10-13T11:24:42.954Z",
+   "kind": "exact",
+   "amount_raw": "10000000000000000000000000",
+   "payTo": "nano_11131a3ia3a81w61k4id3i8iw5ri46b3871o4rdji8at5eg3t9izij86w3hz",
+   "paymentId": null,
+   "hash": "2FCF731248AFF34A9E5B2B1CCF77B5558A847F174DBE24DA76FD8E464F97CF5D",
+   "status": "served",
+   "path": "/v1/chat/completions"
+  }
+ ],
+ "receipts": []
+}
+

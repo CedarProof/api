@@ -1,0 +1,167 @@
+=== CASE cap_hit ===
+--- request (curl -sS -i, PROXY_KEY as Authorization)
+HTTP/1.1 402 Payment Required
+content-type: application/json
+x-payer-refused: over_per_call_limit
+Date: Tue, 13 Oct 2026 11:01:51 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+Transfer-Encoding: chunked
+
+{"error":{"message":"inference-proxy refused: over_per_call_limit {\"amount\":\"0.9\",\"limit\":\"0.001\"}","type":"nano_payer_refused","code":"over_per_call_limit"},"payer":{"code":"over_per_call_limit","detail":{"amount":"0.9","limit":"0.001"}}}
+--- state (payments must be empty: nothing signed)
+{
+ "account": "nano_1ridzu39y48ciqe14e9imztjfh8benjmuanho3jkk4i567fyg7do57ry8md4",
+ "upstream": "http://127.0.0.1:3403",
+ "cap": "0.01",
+ "per_call_limit": "0.001",
+ "spent": "0",
+ "remaining": "0.01",
+ "received": "0",
+ "calls": 1,
+ "paid": 0,
+ "refused": 1,
+ "allow_payto": [],
+ "refusals": [
+  {
+   "t": "2026-10-13T11:01:51.785Z",
+   "code": "over_per_call_limit",
+   "detail": {
+    "amount": "0.9",
+    "limit": "0.001"
+   },
+   "path": "/v1/chat/completions"
+  }
+ ],
+ "payments": [],
+ "receipts": []
+}
+=== CASE allow_miss ===
+--- request (curl -sS -i, PROXY_KEY as Authorization)
+HTTP/1.1 402 Payment Required
+content-type: application/json
+x-payer-refused: payto_not_allowed
+Date: Tue, 13 Oct 2026 11:00:36 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+Transfer-Encoding: chunked
+
+{"error":{"message":"inference-proxy refused: payto_not_allowed {\"payTo\":\"nano_1zow151ycd1xcdt5h911dxmb5frpowk5z63fus6ycwghk9p7rzoyemirsiwk\"}","type":"nano_payer_refused","code":"payto_not_allowed"},"payer":{"code":"payto_not_allowed","detail":{"payTo":"nano_1zow151ycd1xcdt5h911dxmb5frpowk5z63fus6ycwghk9p7rzoyemirsiwk"}}}
+--- state (payments must be empty: nothing signed)
+{
+ "account": "nano_1wwetgdku649i5t4dyqptamnocs4dca1gtrsiksmhdkyu913e7zrtf5dejkg",
+ "upstream": "http://127.0.0.1:3403",
+ "cap": "0.01",
+ "per_call_limit": "0.001",
+ "spent": "0",
+ "remaining": "0.01",
+ "received": "0",
+ "calls": 1,
+ "paid": 0,
+ "refused": 1,
+ "allow_payto": [
+  "nano_11131a3ia3a81w61k4id3i8iw5ri46b3871o4rdji8at5eg3t9izij86w3hz"
+ ],
+ "refusals": [
+  {
+   "t": "2026-10-13T11:00:36.919Z",
+   "code": "payto_not_allowed",
+   "detail": {
+    "payTo": "nano_1zow151ycd1xcdt5h911dxmb5frpowk5z63fus6ycwghk9p7rzoyemirsiwk"
+   },
+   "path": "/v1/chat/completions"
+  }
+ ],
+ "payments": [],
+ "receipts": []
+}
+=== CASE changed_quote ===
+--- request (curl -sS -i, PROXY_KEY as Authorization)
+HTTP/1.1 502 Bad Gateway
+content-type: application/json
+x-payer-refused: not_served_after_payment
+Date: Tue, 13 Oct 2026 11:02:57 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+Transfer-Encoding: chunked
+
+{"error":{"message":"inference-proxy refused: not_served_after_payment {\"status\":402,\"hash\":\"2FCF731248AFF34A9E5B2B1CCF77B5558A847F174DBE24DA76FD8E464F97CF5D\",\"broadcast\":false,\"body\":\"{\\\"error\\\":\\\"payment required\\\"}\"}","type":"nano_payer_refused","code":"not_served_after_payment"},"payer":{"code":"not_served_after_payment","detail":{"status":402,"hash":"2FCF731248AFF34A9E5B2B1CCF77B5558A847F174DBE24DA76FD8E464F97CF5D","broadcast":false,"body":"{\"error\":\"payment required\"}"}}}
+--- state (payments must be empty: nothing signed)
+{
+ "account": "nano_1ridzu39y48ciqe14e9imztjfh8benjmuanho3jkk4i567fyg7do57ry8md4",
+ "upstream": "http://127.0.0.1:3403",
+ "cap": "0.01",
+ "per_call_limit": "0.001",
+ "spent": "0",
+ "remaining": "0.01",
+ "received": "0",
+ "calls": 1,
+ "paid": 0,
+ "refused": 1,
+ "allow_payto": [],
+ "refusals": [
+  {
+   "t": "2026-10-13T11:02:57.387Z",
+   "code": "not_served_after_payment",
+   "detail": {
+    "status": 402,
+    "hash": "2FCF731248AFF34A9E5B2B1CCF77B5558A847F174DBE24DA76FD8E464F97CF5D",
+    "broadcast": false,
+    "body": "{\"error\":\"payment required\"}"
+   },
+   "path": "/v1/chat/completions"
+  }
+ ],
+ "payments": [
+  {
+   "t": "2026-10-13T11:02:50.363Z",
+   "kind": "exact",
+   "amount_raw": "10000000000000000000000000",
+   "payTo": "nano_11131a3ia3a81w61k4id3i8iw5ri46b3871o4rdji8at5eg3t9izij86w3hz",
+   "paymentId": null,
+   "hash": "2FCF731248AFF34A9E5B2B1CCF77B5558A847F174DBE24DA76FD8E464F97CF5D",
+   "status": "not_broadcast_refused",
+   "path": "/v1/chat/completions",
+   "represent_token": null
+  }
+ ],
+ "receipts": []
+}
+=== CASE network_error ===
+--- request (curl -sS -i, PROXY_KEY as Authorization)
+HTTP/1.1 502 Bad Gateway
+content-type: application/json
+x-payer-refused: door_unreachable
+Date: Tue, 13 Oct 2026 11:00:29 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+Transfer-Encoding: chunked
+
+{"error":{"message":"inference-proxy refused: door_unreachable {\"error\":\"fetch failed\"}","type":"nano_payer_refused","code":"door_unreachable"},"payer":{"code":"door_unreachable","detail":{"error":"fetch failed"}}}
+--- state (payments must be empty: nothing signed)
+{
+ "account": "nano_1d9me36fujeq5zxxawhuf58nj3pqusae154fxo8qrwzr8xye8fndwxm3mbrs",
+ "upstream": "http://127.0.0.1:3403",
+ "cap": "0.01",
+ "per_call_limit": "0.001",
+ "spent": "0",
+ "remaining": "0.01",
+ "received": "0",
+ "calls": 1,
+ "paid": 0,
+ "refused": 1,
+ "allow_payto": [],
+ "refusals": [
+  {
+   "t": "2026-10-13T11:00:29.080Z",
+   "code": "door_unreachable",
+   "detail": {
+    "error": "fetch failed"
+   },
+   "path": "/v1/chat/completions"
+  }
+ ],
+ "payments": [],
+ "receipts": []
+}
+
