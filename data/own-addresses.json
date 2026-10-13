@@ -15,6 +15,10 @@
   {
    "address": "nano_3obfgg33bqkqoj5rxp576th7bu4ikuwknpq4swyb3ugfr146y16si3ycu8ui",
    "note": "pursekeeper's throwaway for the 2026-10-10 llmrt clean-checkout gate, seed index 0 (derived by llmrt's nano_pay, never read by their proxy); funded Ӿ0.01 ledger 394 by mistake; swept back to the hot wallet"
+  },
+  {
+   "address": "nano_3qgpdzwx5trwz1xdxetagx6yywu6wid5ko4sffgk8bftk4a6msn1hrpeq1e7",
+   "note": "pursekeeper's throwaway for the 2026-10-13 llmrt v3 re-run (seed index 14, the address the v3 proxy prints at startup); funded Ӿ0.01 ledger 418; opened and signed by llmrt's v3 proxy; swept back to the hot wallet 17:01Z (hash 86F0D1066905E17BFC9D2A6110C646BC0275BE3BCF4B2D0C3715BE52923EA1B7); never a counterparty"
   }
  ]
 }

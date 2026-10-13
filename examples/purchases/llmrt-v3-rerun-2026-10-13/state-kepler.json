@@ -1,0 +1,14 @@
+{
+ "cap_raw": "2000000000000000000000000000",
+ "spent_raw": "1000000000000000000000000000",
+ "calls": [
+  {
+   "ts": "2026-10-13T16:57:40Z",
+   "pay_to": "nano_1jyx763fmsr851ieufnztwh7jed8sssixhd4bsgwcj3rd31iwxaxtendnhu3",
+   "amount_raw": "1000000000000000000000000000",
+   "send_block": "86C9716DBC2E293AAFB13446E317D6D11895176B5EA29B26EEF5BD7B21A779A6",
+   "quote": null
+  }
+ ],
+ "updated_at": "2026-10-13T16:57:40Z"
+}

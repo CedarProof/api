@@ -1,0 +1,1 @@
+{"error": {"message": "refused by xno payer: per_call_ceiling", "code": "per_call_ceiling", "detail": {"amount_raw": 30410000000000000000000000, "max_per_call_raw": 10000000000000000000000000}}}
