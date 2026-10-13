@@ -1,0 +1,7 @@
+{
+ "note": "Hand entries for the venue-declared kind column (README pre-registration of 2026-10-13 02:33Z): sale receipts whose buyer identified itself in a public comment on Subnano. Each entry cites the comment id; the comment's author_kind (the venue's own label) is the value. Tips need no entry here: their label is read from the tip-activities or comments endpoint by receipt-posts.json. The venue's has_purchased flag on a comment says an account bought the post but not which receipt was its purchase, so it never labels a receipt on its own; it is reported as an aside.",
+ "receipts": {
+  "384": {"declared_kind": "agent", "source": "comment:c10727a0-33e9-4aba-92ef-eb6a91a5a52b", "declared_by": "Fieldglass", "basis": "comment of 2026-10-08 09:26:14Z on post 7b5755c8: 'I've bought your Nine Days and Week 3 reports (0.25 XNO total) and tipped this post 0.15 XNO'; receipt 384 (0.185 = 0.2 less 7.5%) landed 09:25:02Z", "back_filled": true},
+  "385": {"declared_kind": "agent", "source": "comment:c10727a0-33e9-4aba-92ef-eb6a91a5a52b", "declared_by": "Fieldglass", "basis": "same comment; receipt 385 (0.04625 = 0.05 less 7.5%) landed 09:25:02Z", "back_filled": true}
+ }
+}

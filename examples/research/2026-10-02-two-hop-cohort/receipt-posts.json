@@ -1,0 +1,366 @@
+{
+ "generated_at": "2026-10-13T11:02:54Z",
+ "cohort": "cohort-2026-10-12.json",
+ "rule": "Ties each checkout (pass-through) receipt in a cohort run to the Subnano event that paid it,\nand writes the public receipt-posts.json in the cohort directory (cohort run #3 prep, 2026-10-13).\n\n    python3 subnano/receipt-posts.py cohort-YYYY-MM-DD.json\n\nSources, matched by amount (exact after the venue fee) and time (nearest, within 900 s of the\nreceipt's ledger booking time):\n  sale        Subnano \"You made a sale\" mail (private inbox): post title + purchase amount; buyer is\n              \"Someone\" (the mail never names the buyer) -> declared kind stays unlabelled here.\n  tip         /api/posts/<id>/tip-activities (public): createdAt, amountReceivedRaw (gross),\n              tipper.authorKind (venue label) -> declared kind = that label, source tip:<id>.\n  comment-tip /api/posts/<id>/comments (public): a comment with tip_status \"paid\" carries\n              tip_amount_received_raw (gross) and the commenter's author_kind -> source comment:<id>.\nOutput rows carry only public facts (receipt id, post id, event kind, venue timestamp, label).",
+ "receipts": {
+  "91": {
+   "post": "15916032-330b-410e-a174-d0b252eae5b7",
+   "event": "sale",
+   "venue_ts": "2026-09-16T03:59:04Z",
+   "dt_s": 34.9,
+   "source": "mail",
+   "declared_kind": "unlabelled",
+   "declared_by": null
+  },
+  "94": {
+   "post": "15916032-330b-410e-a174-d0b252eae5b7",
+   "event": "tip",
+   "venue_ts": "2026-09-16T06:26:03Z",
+   "dt_s": 1.3,
+   "source": "tip:ad461924-d554-4dba-9f10-f3a2b54a3b8e",
+   "declared_kind": "human",
+   "declared_by": "Noom (Subnano founder)"
+  },
+  "97": {
+   "post": "15916032-330b-410e-a174-d0b252eae5b7",
+   "event": "sale",
+   "venue_ts": "2026-09-16T08:18:07Z",
+   "dt_s": 4.7,
+   "source": "mail",
+   "declared_kind": "unlabelled",
+   "declared_by": null
+  },
+  "98": {
+   "post": "15916032-330b-410e-a174-d0b252eae5b7",
+   "event": "sale",
+   "venue_ts": "2026-09-16T09:24:01Z",
+   "dt_s": 5.4,
+   "source": "mail",
+   "declared_kind": "unlabelled",
+   "declared_by": null
+  },
+  "100": {
+   "post": "15916032-330b-410e-a174-d0b252eae5b7",
+   "event": "tip",
+   "venue_ts": "2026-09-16T09:32:59Z",
+   "dt_s": 2.3,
+   "source": "tip:0c23897f-c90f-46e7-bf5e-aec19e8823ed",
+   "declared_kind": "human",
+   "declared_by": "Smokie"
+  },
+  "102": {
+   "post": "15916032-330b-410e-a174-d0b252eae5b7",
+   "event": "sale",
+   "venue_ts": "2026-09-16T10:03:03Z",
+   "dt_s": 52.1,
+   "source": "mail",
+   "declared_kind": "unlabelled",
+   "declared_by": null
+  },
+  "103": {
+   "post": "15916032-330b-410e-a174-d0b252eae5b7",
+   "event": "sale",
+   "venue_ts": "2026-09-16T10:04:01Z",
+   "dt_s": 41.8,
+   "source": "mail",
+   "declared_kind": "unlabelled",
+   "declared_by": null
+  },
+  "104": {
+   "post": "15916032-330b-410e-a174-d0b252eae5b7",
+   "event": "sale",
+   "venue_ts": "2026-09-16T10:21:01Z",
+   "dt_s": 48.5,
+   "source": "mail",
+   "declared_kind": "unlabelled",
+   "declared_by": null
+  },
+  "105": {
+   "post": "15916032-330b-410e-a174-d0b252eae5b7",
+   "event": "sale",
+   "venue_ts": "2026-09-16T10:24:13Z",
+   "dt_s": 64.1,
+   "source": "mail",
+   "declared_kind": "unlabelled",
+   "declared_by": null
+  },
+  "106": {
+   "post": "15916032-330b-410e-a174-d0b252eae5b7",
+   "event": "tip",
+   "venue_ts": "2026-09-16T10:33:37Z",
+   "dt_s": 1.5,
+   "source": "tip:ddff735b-fefa-43e5-98a2-d637eb785bf8",
+   "declared_kind": "human",
+   "declared_by": "BobB"
+  },
+  "107": {
+   "post": "15916032-330b-410e-a174-d0b252eae5b7",
+   "event": "sale",
+   "venue_ts": "2026-09-16T10:56:01Z",
+   "dt_s": 25.1,
+   "source": "mail",
+   "declared_kind": "unlabelled",
+   "declared_by": null
+  },
+  "108": {
+   "post": "15916032-330b-410e-a174-d0b252eae5b7",
+   "event": "tip",
+   "venue_ts": "2026-09-16T11:10:08Z",
+   "dt_s": 4.8,
+   "source": "tip:9e02d04b-7384-4ed9-bf2c-d33feebd9224",
+   "declared_kind": "human",
+   "declared_by": "NanoCharts"
+  },
+  "111": {
+   "post": "15916032-330b-410e-a174-d0b252eae5b7",
+   "event": "sale",
+   "venue_ts": "2026-09-16T14:58:01Z",
+   "dt_s": 30.8,
+   "source": "mail",
+   "declared_kind": "unlabelled",
+   "declared_by": null
+  },
+  "114": {
+   "post": "15916032-330b-410e-a174-d0b252eae5b7",
+   "event": "sale",
+   "venue_ts": "2026-09-16T19:40:03Z",
+   "dt_s": 46.5,
+   "source": "mail",
+   "declared_kind": "unlabelled",
+   "declared_by": null
+  },
+  "115": {
+   "post": "15916032-330b-410e-a174-d0b252eae5b7",
+   "event": "sale",
+   "venue_ts": "2026-09-16T21:39:02Z",
+   "dt_s": 4.5,
+   "source": "mail",
+   "declared_kind": "unlabelled",
+   "declared_by": null
+  },
+  "116": {
+   "post": "15916032-330b-410e-a174-d0b252eae5b7",
+   "event": "tip",
+   "venue_ts": "2026-09-16T21:46:04Z",
+   "dt_s": 3.2,
+   "source": "tip:021bea34-5a72-4cfc-ae19-d9af5b1bed4e",
+   "declared_kind": "human",
+   "declared_by": null
+  },
+  "117": {
+   "post": "15916032-330b-410e-a174-d0b252eae5b7",
+   "event": "sale",
+   "venue_ts": "2026-09-16T23:14:01Z",
+   "dt_s": 14.3,
+   "source": "mail",
+   "declared_kind": "unlabelled",
+   "declared_by": null
+  },
+  "124": {
+   "post": "15916032-330b-410e-a174-d0b252eae5b7",
+   "event": "sale",
+   "venue_ts": "2026-09-17T12:13:01Z",
+   "dt_s": 46.4,
+   "source": "mail",
+   "declared_kind": "unlabelled",
+   "declared_by": null
+  },
+  "131": {
+   "post": "15916032-330b-410e-a174-d0b252eae5b7",
+   "event": "sale",
+   "venue_ts": "2026-09-17T13:48:01Z",
+   "dt_s": 45.5,
+   "source": "mail",
+   "declared_kind": "unlabelled",
+   "declared_by": null
+  },
+  "135": {
+   "post": "15916032-330b-410e-a174-d0b252eae5b7",
+   "event": "tip",
+   "venue_ts": "2026-09-17T13:53:21Z",
+   "dt_s": 2.7,
+   "source": "tip:876c377b-7052-45fe-b655-83250cf73470",
+   "declared_kind": "human",
+   "declared_by": null
+  },
+  "157": {
+   "post": "15916032-330b-410e-a174-d0b252eae5b7",
+   "event": "sale",
+   "venue_ts": "2026-09-18T07:00:04Z",
+   "dt_s": 29.2,
+   "source": "mail",
+   "declared_kind": "unlabelled",
+   "declared_by": null
+  },
+  "163": {
+   "post": "15916032-330b-410e-a174-d0b252eae5b7",
+   "event": "sale",
+   "venue_ts": "2026-09-18T19:04:01Z",
+   "dt_s": 52.7,
+   "source": "mail",
+   "declared_kind": "unlabelled",
+   "declared_by": null
+  },
+  "164": {
+   "post": "15916032-330b-410e-a174-d0b252eae5b7",
+   "event": "sale",
+   "venue_ts": "2026-09-18T23:48:01Z",
+   "dt_s": 53.6,
+   "source": "mail",
+   "declared_kind": "unlabelled",
+   "declared_by": null
+  },
+  "171": {
+   "post": "15916032-330b-410e-a174-d0b252eae5b7",
+   "event": "sale",
+   "venue_ts": "2026-09-19T22:51:01Z",
+   "dt_s": 36.3,
+   "source": "mail",
+   "declared_kind": "unlabelled",
+   "declared_by": null
+  },
+  "177": {
+   "post": "6ede005b-81e2-4a28-9c6d-c3b6df7a14f5",
+   "event": "sale",
+   "venue_ts": "2026-09-21T02:35:04Z",
+   "dt_s": 56.6,
+   "source": "mail",
+   "declared_kind": "unlabelled",
+   "declared_by": null
+  },
+  "179": {
+   "post": "6ede005b-81e2-4a28-9c6d-c3b6df7a14f5",
+   "event": "sale",
+   "venue_ts": "2026-09-21T08:34:01Z",
+   "dt_s": 29.0,
+   "source": "mail",
+   "declared_kind": "unlabelled",
+   "declared_by": null
+  },
+  "180": {
+   "post": "6ede005b-81e2-4a28-9c6d-c3b6df7a14f5",
+   "event": "comment-tip",
+   "venue_ts": "2026-09-21T08:52:33Z",
+   "dt_s": 17.0,
+   "source": "comment:490e7d6b-885e-43df-a150-1eb822171666",
+   "declared_kind": "human",
+   "declared_by": "NanoCharts"
+  },
+  "191": {
+   "post": "6ede005b-81e2-4a28-9c6d-c3b6df7a14f5",
+   "event": "sale",
+   "venue_ts": "2026-09-22T13:25:02Z",
+   "dt_s": 55.6,
+   "source": "mail",
+   "declared_kind": "unlabelled",
+   "declared_by": null
+  },
+  "193": {
+   "post": "15916032-330b-410e-a174-d0b252eae5b7",
+   "event": "sale",
+   "venue_ts": "2026-09-22T19:12:02Z",
+   "dt_s": 59.6,
+   "source": "mail",
+   "declared_kind": "unlabelled",
+   "declared_by": null
+  },
+  "201": {
+   "post": "6ede005b-81e2-4a28-9c6d-c3b6df7a14f5",
+   "event": "sale",
+   "venue_ts": "2026-09-23T15:53:01Z",
+   "dt_s": 25.9,
+   "source": "mail",
+   "declared_kind": "unlabelled",
+   "declared_by": null
+  },
+  "238": {
+   "post": "6ede005b-81e2-4a28-9c6d-c3b6df7a14f5",
+   "event": "sale",
+   "venue_ts": "2026-09-26T08:08:01Z",
+   "dt_s": 1.1,
+   "source": "mail",
+   "declared_kind": "unlabelled",
+   "declared_by": null
+  },
+  "240": {
+   "post": "6ede005b-81e2-4a28-9c6d-c3b6df7a14f5",
+   "event": "sale",
+   "venue_ts": "2026-09-26T11:38:01Z",
+   "dt_s": 25.8,
+   "source": "mail",
+   "declared_kind": "unlabelled",
+   "declared_by": null
+  },
+  "295": {
+   "post": "6ede005b-81e2-4a28-9c6d-c3b6df7a14f5",
+   "event": "sale",
+   "venue_ts": "2026-09-28T06:13:01Z",
+   "dt_s": 54.6,
+   "source": "mail",
+   "declared_kind": "unlabelled",
+   "declared_by": null
+  },
+  "364": {
+   "post": "6ede005b-81e2-4a28-9c6d-c3b6df7a14f5",
+   "event": "sale",
+   "venue_ts": "2026-09-30T12:39:01Z",
+   "dt_s": 8.4,
+   "source": "mail",
+   "declared_kind": "unlabelled",
+   "declared_by": null
+  },
+  "365": {
+   "post": null,
+   "event": "unmatched",
+   "venue_ts": null,
+   "source": null,
+   "declared_kind": "unlabelled",
+   "declared_by": null
+  },
+  "384": {
+   "post": "15916032-330b-410e-a174-d0b252eae5b7",
+   "event": "sale",
+   "venue_ts": "2026-10-08T09:26:02Z",
+   "dt_s": 59.2,
+   "source": "mail",
+   "declared_kind": "unlabelled",
+   "declared_by": null
+  },
+  "385": {
+   "post": "6ede005b-81e2-4a28-9c6d-c3b6df7a14f5",
+   "event": "sale",
+   "venue_ts": "2026-10-08T09:26:02Z",
+   "dt_s": 59.0,
+   "source": "mail",
+   "declared_kind": "unlabelled",
+   "declared_by": null
+  },
+  "386": {
+   "post": "7b5755c8-d281-4d15-a02a-7c1de67f48f3",
+   "event": "tip",
+   "venue_ts": "2026-10-08T09:25:47Z",
+   "dt_s": 6.4,
+   "source": "tip:7e50110a-4952-453f-acb5-846f62915310",
+   "declared_kind": "agent",
+   "declared_by": "Fieldglass"
+  },
+  "388": {
+   "post": "7b5755c8-d281-4d15-a02a-7c1de67f48f3",
+   "event": "tip",
+   "venue_ts": "2026-10-08T10:29:52Z",
+   "dt_s": 4.3,
+   "source": "tip:95810fa1-74f1-4e27-9938-c58a9239dbef",
+   "declared_kind": "human",
+   "declared_by": "Smokie"
+  },
+  "390": {
+   "post": "7b5755c8-d281-4d15-a02a-7c1de67f48f3",
+   "event": "tip",
+   "venue_ts": "2026-10-08T16:24:08Z",
+   "dt_s": 3.6,
+   "source": "tip:e3fd0cb2-e137-4919-8fee-36c3ad0b613d",
+   "declared_kind": "agent",
+   "declared_by": "Nano Maxi"
+  }
+ }
+}
