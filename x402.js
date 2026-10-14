@@ -79,7 +79,8 @@ function blockHash(raw) {
 //   accountInfo(account) -> account_info RPC result (with representative), or {error}
 //   workThreshold        -> hex threshold (default send threshold)
 //   reference            -> optional @x402nano/exact facilitator scheme; its verify() runs too
-//   seen(hash)           -> optional; true if this hash was already settled or credited
+//   seen(hash)           -> optional; true if this hash was already settled or credited, or a string
+//                           reason when the chain holds the block but it sends another amount
 //   workGenerate(hash)   -> optional; returns work for the payer's frontier when the block
 //                           carries none (or invalid work). Runs last, after every cheap check.
 //   blockInfo(hash)      -> optional; block_info RPC result for a block that is already the
@@ -135,7 +136,11 @@ async function verify(payload, required, deps) {
       if (!N.verifyBlock({ hash, signature: block.signature, publicKey: N.derivePublicKey(block.account) })) return fail('bad signature', payer);
     } catch (e) { return fail('cannot hash or verify block: ' + e.message, payer); }
 
-    if (deps.seen && await deps.seen(hash)) return fail('this block was already used to pay', payer);
+    // seen() answers true (already used) or a string naming a different fault found on the chain: a block that is already
+    // on the ledger but sends another amount than required is an amount mismatch, not a replay, so that a confirmed 1-raw
+    // send presented at the full price is refused as underpayment and never read as "already paid" (check 10 of the
+    // scheme document as drafted by kilkelly, x402#3432, 2026-10-13).
+    if (deps.seen) { const s = await deps.seen(hash); if (s) return fail(typeof s === 'string' ? s : 'this block was already used to pay', payer); }
 
     // (d), (e), (h) against the node
     let info;
@@ -155,6 +160,7 @@ async function verify(payload, required, deps) {
         let b;
         try { b = await deps.blockInfo(hash); } catch (e) { return fail('node rpc failed: ' + e.message, payer); }
         if (b && !b.error && b.subtype === 'send') {
+          if (b.subtype && b.subtype !== 'send') return fail('the block on the chain does not send anything (subtype ' + b.subtype + ')', payer);
           if (String(b.amount) !== String(required.amount)) return fail('the block on the chain sends ' + b.amount + ' raw; exactly ' + required.amount + ' raw required', payer);
           // The confirmation gate the normal path puts on the frontier applies here too: block_info answers confirmed as the
           // string 'true' / 'false', and the first version served the landed block before it was confirmed (Ops Control HQ,

@@ -36,7 +36,7 @@ function node(over = {}) {
   const chain = new Map();
   const rpc = async b => {
     if (b.action === 'account_info') return over.info ? over.info() : info();
-    if (b.action === 'block_info') { const x = chain.get(b.hash); return x ? { block_account: payer, confirmed: over.confirm === false ? 'false' : 'true', contents: x } : { error: 'Block not found' }; }
+    if (b.action === 'block_info') { const x = chain.get(b.hash); return x ? { block_account: payer, subtype: 'send', amount: (BALANCE - BigInt(x.balance)).toString(), confirmed: over.confirm === false ? 'false' : 'true', contents: x } : { error: 'Block not found' }; }
     if (b.action === 'process') { if (over.processError) return { error: over.processError }; const h = N.hashBlock({ account: b.block.account, previous: b.block.previous, representative: b.block.representative, balance: b.block.balance, link: b.block.link }); chain.set(h, b.block); return { hash: h }; }
     throw new Error('unexpected rpc ' + b.action);
   };
@@ -70,6 +70,36 @@ test('verify: bad work -> invalid_work', async () => {
 });
 
 test('verify: block already on the chain -> block_already_exists (check 9)', async () => {
+  const n = node();
+  const b = makeBlock();
+  await n({ action: 'process', block: b });
+  const r = await f.verifyRequest(body(b), deps(n));
+  assert.equal(r.invalidReason, 'block_already_exists');
+});
+
+test('verify: a confirmed block on the chain that sends 1 raw, presented at the full price -> amount_mismatch, not block_already_exists (check 10, x402#3432)', async () => {
+  const n = node();
+  const b = makeBlock({ balance: (BALANCE - 1n).toString() });   // a real 1-raw send, landed and confirmed
+  await n({ action: 'process', block: b });
+  const r = await f.verifyRequest(body(b), deps(n));
+  assert.equal(r.isValid, false);
+  assert.equal(r.invalidReason, 'amount_mismatch', r.detail);
+  assert.match(r.detail, /sends 1 raw; exactly 1000000000000000000000000000 raw required/);
+  const s = await f.settleRequest(body(b), deps(n));
+  assert.equal(s.success, false); assert.equal(s.errorReason, 'amount_mismatch'); assert.equal(s.transaction, '');
+  assert.equal([...n.chain.keys()].length, 1, 'nothing else was broadcast');
+});
+
+test('verify: a block on the chain that is not a send -> amount_mismatch (check 10 subtype clause)', async () => {
+  const n = node();
+  const b = makeBlock();
+  await n({ action: 'process', block: b });
+  const rpc = async q => { const a = await n(q); if (q.action === 'block_info' && !a.error) return { ...a, subtype: 'receive' }; return a; };
+  const r = await f.verifyRequest(body(b), deps(rpc));
+  assert.equal(r.invalidReason, 'amount_mismatch'); assert.match(r.detail, /subtype receive/);
+});
+
+test('verify: a block on the chain with the right amount is still block_already_exists (check 10 order: amount first, then confirmation)', async () => {
   const n = node();
   const b = makeBlock();
   await n({ action: 'process', block: b });
@@ -242,10 +272,12 @@ test('settle: a retry of its own broadcast after confirmation_timeout is answere
   const r2b = await f.settleRequest(body(blk, req), deps(rpc));
   assert.equal(r2b.success, false); assert.equal(r2b.errorReason, 'block_already_exists'); assert.equal(r2b.transaction, r1.transaction); assert.match(r2b.detail, /answered success at/);
   assert.equal(processes, 1);
-  // For other requirements it is a block that is simply on the chain already: refused with no hash
+  // For other requirements the block on the chain sends a different amount than asked: since 2026-10-14 that is an
+  // amount_mismatch with no hash (check 10 of the scheme document compares subtype and amount before calling it a
+  // replay); until then it was block_already_exists with no hash
   const other = { ...req, amount: (AMOUNT + 1n).toString() };
   const r3 = await f.settleRequest(body(blk, other), deps(rpc));
-  assert.equal(r3.success, false); assert.equal(r3.errorReason, 'block_already_exists'); assert.equal(r3.transaction, '');
+  assert.equal(r3.success, false); assert.equal(r3.errorReason, 'amount_mismatch'); assert.equal(r3.transaction, '');
   assert.ok(f.broadcast.has(r1.transaction));
 });
 

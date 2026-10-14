@@ -1,0 +1,231 @@
+{
+  "generated_at": "2026-10-14T04:48:33.207Z",
+  "facilitator": "https://facilitator.pursekeeper.dev",
+  "seller": "https://pursekeeper.dev",
+  "node": "pursekeeper's own nano_node v28 (local RPC)",
+  "work_threshold_send": "fffffff800000000",
+  "requirements_full_price": {
+    "scheme": "exact",
+    "network": "nano:mainnet",
+    "asset": "XNO",
+    "amount": "1000000000000000000000000000",
+    "payTo": "nano_1xug1q5t7nxoj3ywwzokiea9jz8fq8qfgzp8pbyfr3co3e5xgj755uofu8ue",
+    "maxTimeoutSeconds": 60
+  },
+  "requirements_one_raw": {
+    "scheme": "exact",
+    "network": "nano:mainnet",
+    "asset": "XNO",
+    "amount": "1",
+    "payTo": "nano_1xug1q5t7nxoj3ywwzokiea9jz8fq8qfgzp8pbyfr3co3e5xgj755uofu8ue",
+    "maxTimeoutSeconds": 60
+  },
+  "payer": "nano_1i3y944esngqw6wb6ia68dotj4yuqctch9kx8ct65twt8ewi4rdcfgax7ggf",
+  "account_info_before": {
+    "frontier": "30CCB03D899B3197100E5322791E38371ED48ADF837819EA6CB1F63B34A7A1F2",
+    "open_block": "44EB0C8D025701CB246672CFDD542998DB17DB0CD5FEA02D8C82E79B60F9B76D",
+    "representative_block": "30CCB03D899B3197100E5322791E38371ED48ADF837819EA6CB1F63B34A7A1F2",
+    "balance": "48738598785207476890320950701",
+    "confirmed_balance": "48738598785207476890320950701",
+    "modified_timestamp": "1791937888",
+    "block_count": "117",
+    "account_version": "2",
+    "confirmed_height": "117",
+    "confirmed_frontier": "30CCB03D899B3197100E5322791E38371ED48ADF837819EA6CB1F63B34A7A1F2",
+    "representative": "nano_3arg3asgtigae3xckabaaewkx3bzsh7nwz7jkmjos79ihyaxwphhm6qgjps4",
+    "confirmed_representative": "nano_3arg3asgtigae3xckabaaewkx3bzsh7nwz7jkmjos79ihyaxwphhm6qgjps4"
+  },
+  "vector": {
+    "id": "V13",
+    "name": "A confirmed send of 1 raw to payTo, presented with accepted.amount at the full price (check 10)",
+    "block_hash": "34845D9CCF5F574A3CF01A77ACB3B02AC970FB5745B3A317E35524BAF62E2472",
+    "block": {
+      "type": "state",
+      "account": "nano_1i3y944esngqw6wb6ia68dotj4yuqctch9kx8ct65twt8ewi4rdcfgax7ggf",
+      "previous": "30CCB03D899B3197100E5322791E38371ED48ADF837819EA6CB1F63B34A7A1F2",
+      "representative": "nano_3arg3asgtigae3xckabaaewkx3bzsh7nwz7jkmjos79ihyaxwphhm6qgjps4",
+      "balance": "48738598785207476890320950700",
+      "link": "776E05C7A2D3B5887DCE7EB2831078FCCDB9AED77EC6B27CDC05550B07D744A3",
+      "link_as_account": "nano_1xug1q5t7nxoj3ywwzokiea9jz8fq8qfgzp8pbyfr3co3e5xgj755uofu8ue",
+      "signature": "BCF4E3F690E94C5CD7A266C6091EFCA591040C9F49E9A65F744808B579AB9130F018D9CF910AA67C12ECAF78FE15D69FACB5818AA5538D53FB305AD2D6C4A401",
+      "work": "9f3a100ca25db498"
+    },
+    "step_1_settled_at_amount_1": {
+      "payment_payload": {
+        "x402Version": 2,
+        "resource": {
+          "url": "https://pursekeeper.dev/v1/echo?msg=vector",
+          "description": "returns what you sent (test your payment client)",
+          "mimeType": "application/json"
+        },
+        "accepted": {
+          "scheme": "exact",
+          "network": "nano:mainnet",
+          "asset": "XNO",
+          "amount": "1",
+          "payTo": "nano_1xug1q5t7nxoj3ywwzokiea9jz8fq8qfgzp8pbyfr3co3e5xgj755uofu8ue",
+          "maxTimeoutSeconds": 60
+        },
+        "payload": {
+          "block": {
+            "type": "state",
+            "account": "nano_1i3y944esngqw6wb6ia68dotj4yuqctch9kx8ct65twt8ewi4rdcfgax7ggf",
+            "previous": "30CCB03D899B3197100E5322791E38371ED48ADF837819EA6CB1F63B34A7A1F2",
+            "representative": "nano_3arg3asgtigae3xckabaaewkx3bzsh7nwz7jkmjos79ihyaxwphhm6qgjps4",
+            "balance": "48738598785207476890320950700",
+            "link": "776E05C7A2D3B5887DCE7EB2831078FCCDB9AED77EC6B27CDC05550B07D744A3",
+            "link_as_account": "nano_1xug1q5t7nxoj3ywwzokiea9jz8fq8qfgzp8pbyfr3co3e5xgj755uofu8ue",
+            "signature": "BCF4E3F690E94C5CD7A266C6091EFCA591040C9F49E9A65F744808B579AB9130F018D9CF910AA67C12ECAF78FE15D69FACB5818AA5538D53FB305AD2D6C4A401",
+            "work": "9f3a100ca25db498"
+          }
+        }
+      },
+      "verify_response": {
+        "status": 200,
+        "body": {
+          "isValid": true,
+          "payer": "nano_1i3y944esngqw6wb6ia68dotj4yuqctch9kx8ct65twt8ewi4rdcfgax7ggf"
+        }
+      },
+      "settle_response": {
+        "status": 200,
+        "body": {
+          "success": true,
+          "transaction": "34845D9CCF5F574A3CF01A77ACB3B02AC970FB5745B3A317E35524BAF62E2472",
+          "network": "nano:mainnet",
+          "payer": "nano_1i3y944esngqw6wb6ia68dotj4yuqctch9kx8ct65twt8ewi4rdcfgax7ggf"
+        }
+      },
+      "settle_ms": 549,
+      "block_info_after": {
+        "confirmed": "true",
+        "height": "118",
+        "amount": "1",
+        "subtype": "send",
+        "block_account": "nano_1i3y944esngqw6wb6ia68dotj4yuqctch9kx8ct65twt8ewi4rdcfgax7ggf",
+        "local_timestamp": "1791953315"
+      }
+    },
+    "step_2_presented_at_full_price": {
+      "payment_payload": {
+        "x402Version": 2,
+        "resource": {
+          "url": "https://pursekeeper.dev/v1/echo?msg=vector",
+          "description": "returns what you sent (test your payment client)",
+          "mimeType": "application/json"
+        },
+        "accepted": {
+          "scheme": "exact",
+          "network": "nano:mainnet",
+          "asset": "XNO",
+          "amount": "1000000000000000000000000000",
+          "payTo": "nano_1xug1q5t7nxoj3ywwzokiea9jz8fq8qfgzp8pbyfr3co3e5xgj755uofu8ue",
+          "maxTimeoutSeconds": 60
+        },
+        "payload": {
+          "block": {
+            "type": "state",
+            "account": "nano_1i3y944esngqw6wb6ia68dotj4yuqctch9kx8ct65twt8ewi4rdcfgax7ggf",
+            "previous": "30CCB03D899B3197100E5322791E38371ED48ADF837819EA6CB1F63B34A7A1F2",
+            "representative": "nano_3arg3asgtigae3xckabaaewkx3bzsh7nwz7jkmjos79ihyaxwphhm6qgjps4",
+            "balance": "48738598785207476890320950700",
+            "link": "776E05C7A2D3B5887DCE7EB2831078FCCDB9AED77EC6B27CDC05550B07D744A3",
+            "link_as_account": "nano_1xug1q5t7nxoj3ywwzokiea9jz8fq8qfgzp8pbyfr3co3e5xgj755uofu8ue",
+            "signature": "BCF4E3F690E94C5CD7A266C6091EFCA591040C9F49E9A65F744808B579AB9130F018D9CF910AA67C12ECAF78FE15D69FACB5818AA5538D53FB305AD2D6C4A401",
+            "work": "9f3a100ca25db498"
+          }
+        }
+      },
+      "verify_request": {
+        "x402Version": 2,
+        "paymentPayload": {
+          "x402Version": 2,
+          "resource": {
+            "url": "https://pursekeeper.dev/v1/echo?msg=vector",
+            "description": "returns what you sent (test your payment client)",
+            "mimeType": "application/json"
+          },
+          "accepted": {
+            "scheme": "exact",
+            "network": "nano:mainnet",
+            "asset": "XNO",
+            "amount": "1000000000000000000000000000",
+            "payTo": "nano_1xug1q5t7nxoj3ywwzokiea9jz8fq8qfgzp8pbyfr3co3e5xgj755uofu8ue",
+            "maxTimeoutSeconds": 60
+          },
+          "payload": {
+            "block": {
+              "type": "state",
+              "account": "nano_1i3y944esngqw6wb6ia68dotj4yuqctch9kx8ct65twt8ewi4rdcfgax7ggf",
+              "previous": "30CCB03D899B3197100E5322791E38371ED48ADF837819EA6CB1F63B34A7A1F2",
+              "representative": "nano_3arg3asgtigae3xckabaaewkx3bzsh7nwz7jkmjos79ihyaxwphhm6qgjps4",
+              "balance": "48738598785207476890320950700",
+              "link": "776E05C7A2D3B5887DCE7EB2831078FCCDB9AED77EC6B27CDC05550B07D744A3",
+              "link_as_account": "nano_1xug1q5t7nxoj3ywwzokiea9jz8fq8qfgzp8pbyfr3co3e5xgj755uofu8ue",
+              "signature": "BCF4E3F690E94C5CD7A266C6091EFCA591040C9F49E9A65F744808B579AB9130F018D9CF910AA67C12ECAF78FE15D69FACB5818AA5538D53FB305AD2D6C4A401",
+              "work": "9f3a100ca25db498"
+            }
+          }
+        },
+        "paymentRequirements": {
+          "scheme": "exact",
+          "network": "nano:mainnet",
+          "asset": "XNO",
+          "amount": "1000000000000000000000000000",
+          "payTo": "nano_1xug1q5t7nxoj3ywwzokiea9jz8fq8qfgzp8pbyfr3co3e5xgj755uofu8ue",
+          "maxTimeoutSeconds": 60
+        }
+      },
+      "verify_response": {
+        "status": 200,
+        "body": {
+          "isValid": false,
+          "invalidReason": "amount_mismatch",
+          "detail": "the block on the chain sends 1 raw; exactly 1000000000000000000000000000 raw required",
+          "payer": "nano_1i3y944esngqw6wb6ia68dotj4yuqctch9kx8ct65twt8ewi4rdcfgax7ggf"
+        }
+      },
+      "settle_response": {
+        "status": 200,
+        "body": {
+          "success": false,
+          "errorReason": "amount_mismatch",
+          "detail": "the block on the chain sends 1 raw; exactly 1000000000000000000000000000 raw required",
+          "transaction": "",
+          "network": "nano:mainnet",
+          "payer": "nano_1i3y944esngqw6wb6ia68dotj4yuqctch9kx8ct65twt8ewi4rdcfgax7ggf"
+        }
+      }
+    },
+    "step_3_presented_again_at_amount_1": {
+      "verify_response": {
+        "status": 200,
+        "body": {
+          "isValid": false,
+          "invalidReason": "block_already_exists",
+          "detail": "this block was already used to pay",
+          "payer": "nano_1i3y944esngqw6wb6ia68dotj4yuqctch9kx8ct65twt8ewi4rdcfgax7ggf"
+        }
+      },
+      "settle_response": {
+        "status": 200,
+        "body": {
+          "success": false,
+          "errorReason": "block_already_exists",
+          "detail": "block 34845D9CCF5F574A3CF01A77ACB3B02AC970FB5745B3A317E35524BAF62E2472 was settled through this facilitator for the same payTo and amount and answered success at 2026-10-14T04:48:35.557Z; a second success is not given for the same block",
+          "transaction": "34845D9CCF5F574A3CF01A77ACB3B02AC970FB5745B3A317E35524BAF62E2472",
+          "network": "nano:mainnet",
+          "payer": "nano_1i3y944esngqw6wb6ia68dotj4yuqctch9kx8ct65twt8ewi4rdcfgax7ggf"
+        }
+      }
+    },
+    "block_info_final": {
+      "confirmed": "true",
+      "height": "118",
+      "amount": "1",
+      "subtype": "send",
+      "block_account": "nano_1i3y944esngqw6wb6ia68dotj4yuqctch9kx8ct65twt8ewi4rdcfgax7ggf",
+      "local_timestamp": "1791953315"
+    }
+  }
+}

@@ -132,7 +132,13 @@ async function verifyRequest(body, deps) {
       const own = ownBroadcast(h, req);
       if (own) return !!own.answered;
       const b = await deps.rpc({ action: 'block_info', json_block: 'true', hash: h });
-      return !!(b && !b.error && b.block_account);
+      if (!(b && !b.error && b.block_account)) return false;
+      // Check 10 of the scheme document (kilkelly's draft of 2026-10-13, x402#3432): a block the chain already holds is
+      // compared on subtype and amount before it is called a replay, so a confirmed 1-raw send presented at the full
+      // price is amount_mismatch (transaction stays empty), not block_already_exists.
+      if (b.subtype && b.subtype !== 'send') return 'the block on the chain does not send anything (subtype ' + b.subtype + ')';
+      if (b.amount !== undefined && String(b.amount) !== String(req.amount)) return 'the block on the chain sends ' + b.amount + ' raw; exactly ' + req.amount + ' raw required';
+      return true;
     },
     // A retried block is by now the payer's frontier: verify reads its amount and confirmation from the chain (alreadyLanded)
     blockInfo: h => deps.rpc({ action: 'block_info', json_block: 'true', hash: h }),
@@ -393,7 +399,11 @@ parsed answers with payer "".
   7. the block hash has not been presented before, unless
      this facilitator broadcast it in the last 24 h for the
      same payTo and amount and has not yet answered success
-     for it (a /settle retry; see below)                      block_already_exists
+     for it (a /settle retry; see below). A block the chain
+     already holds is compared on subtype and amount first:
+     one that sends another amount than required is refused
+     as amount_mismatch, not as a replay (check 10 of the
+     scheme document, 2026-10-14)                             block_already_exists / amount_mismatch
   8. block.previous is the payer's confirmed frontier        frontier_moved / frontier_unconfirmed / account_not_found
   9. account balance - block.balance == amount, exactly      amount_mismatch
  10. work is above the send threshold fffffff800000000 over
