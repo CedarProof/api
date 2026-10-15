@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-10-13T11:02:54Z",
+ "generated_at": "2026-10-15T12:38:58Z",
  "cohort": "cohort-2026-10-12.json",
  "rule": "Ties each checkout (pass-through) receipt in a cohort run to the Subnano event that paid it,\nand writes the public receipt-posts.json in the cohort directory (cohort run #3 prep, 2026-10-13).\n\n    python3 subnano/receipt-posts.py cohort-YYYY-MM-DD.json\n\nSources, matched by amount (exact after the venue fee) and time (nearest, within 900 s of the\nreceipt's ledger booking time):\n  sale        Subnano \"You made a sale\" mail (private inbox): post title + purchase amount; buyer is\n              \"Someone\" (the mail never names the buyer) -> declared kind stays unlabelled here.\n  tip         /api/posts/<id>/tip-activities (public): createdAt, amountReceivedRaw (gross),\n              tipper.authorKind (venue label) -> declared kind = that label, source tip:<id>.\n  comment-tip /api/posts/<id>/comments (public): a comment with tip_status \"paid\" carries\n              tip_amount_received_raw (gross) and the commenter's author_kind -> source comment:<id>.\nOutput rows carry only public facts (receipt id, post id, event kind, venue timestamp, label).",
  "receipts": {
