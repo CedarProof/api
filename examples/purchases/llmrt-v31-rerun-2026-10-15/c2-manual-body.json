@@ -1,0 +1,10 @@
+{
+ "address": "nano_3o3pxia6zq8ccs8oqmhjdxf7885xggpi6fqz4re6sb64u8b64hndghq7drum",
+ "result": {
+  "valid": true,
+  "prefix": "nano",
+  "public_key": "D436EC104FDCCA564D5BCDF15F5A53187D73AD0236FF16184CA482D992413E8B"
+ },
+ "paid": true,
+ "payment": "5C32CAE47646ACCBBAA3A0CE4185E0AF5B0789D92C086A40A88B0B8E52D2E580"
+}

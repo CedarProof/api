@@ -1,0 +1,1 @@
+{"error": "payment required", "pay_to": "nano_1jyx763fmsr851ieufnztwh7jed8sssixhd4bsgwcj3rd31iwxaxtendnhu3", "price_raw": "1000000000000000000000000000", "network": "nano:mainnet", "retry_with_header": "X-Nano-Payment: <send block hash>", "x-nano-payment": "41A0B3800FCAE8E362B32D4AD3CA8FFE18AE11D6B875B7A83D3FE5C09CDB52EB", "waited_seconds": 85.8, "replay_ready": true}

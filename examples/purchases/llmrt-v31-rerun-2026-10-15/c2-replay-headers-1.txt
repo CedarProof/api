@@ -1,0 +1,16 @@
+HTTP/1.0 402 Payment Required
+Server: BaseHTTP/0.6 Python/3.14.4
+Date: Thu, 15 Oct 2026 12:28:49 GMT
+Date: Thu, 15 Oct 2026 12:28:49 GMT
+Content-Type: application/json
+Access-Control-Allow-Origin: *
+x-payment-address: nano_1jyx763fmsr851ieufnztwh7jed8sssixhd4bsgwcj3rd31iwxaxtendnhu3
+x-payment-amount-raw: 1000000000000000000000000000
+Report-To: {"group":"cf-nel","max_age":604800,"endpoints":[{"url":"https://a.nel.cloudflare.com/report/v4?s=T2QyunZW4Go8jaCmvonU2pnk4V4mVnGyWAPtQZIjAg23IxcdV7NLwoFj5%2FQNk2keTMmtYI1be0pBfrdnGD9O8uuEjeYcD7wohB9EjE3ApGl3DuB943kdWJ0Ofl8t1jEbTf3Ia7YqprT2e0V93b8as0c5IBOeTkX%2FYW6STg%3D%3D"}]}
+Nel: {"report_to":"cf-nel","success_fraction":0.0,"max_age":604800}
+Server: cloudflare
+CF-RAY: a4aed36a2c4f3904-ARN
+alt-svc: h3=":443"; ma=86400
+x-nano-payment: 41A0B3800FCAE8E362B32D4AD3CA8FFE18AE11D6B875B7A83D3FE5C09CDB52EB
+content-length: 370
+

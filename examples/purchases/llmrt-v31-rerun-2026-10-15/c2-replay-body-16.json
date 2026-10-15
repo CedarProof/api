@@ -1,0 +1,1 @@
+{"error": {"message": "refused by xno payer: cap_exceeded", "code": "cap_exceeded", "detail": {"spent_raw": 2000000000000000000000000000, "amount_raw": 1000000000000000000000000000, "cap_raw": 2000000000000000000000000000}}}
