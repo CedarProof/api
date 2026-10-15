@@ -154,6 +154,7 @@ test('settle: a second settle of the same block is refused', async () => {
   const r2 = await f.settleRequest(body(b), deps(n));
   assert.equal(r2.success, false); assert.equal(r2.errorReason, 'block_already_exists');
   assert.equal(r2.transaction, r1.transaction, 'the replay names the settled hash'); assert.match(r2.detail, /answered success at/);
+  assert.equal(r2.errorMessage, r2.detail, 'errorMessage carries the same text as detail (x402 SettleResponse name)');
 });
 
 test('settle: two concurrent settles of the same block yield one success and one refusal, and one process call', async () => {

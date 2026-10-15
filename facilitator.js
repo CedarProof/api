@@ -6,8 +6,8 @@
 //
 //   GET  /supported  -> { kinds: [{ x402Version, scheme, network, extra }], extensions, signers }
 //   POST /verify     { x402Version?, paymentPayload, paymentRequirements }
-//                    -> { isValid, invalidReason?, detail?, payer }
-//   POST /settle     same body -> { success, errorReason?, detail?, transaction, network, payer }
+//                    -> { isValid, invalidReason?, invalidMessage?, payer }   (detail = invalidMessage, deprecated, until 0.3.0)
+//   POST /settle     same body -> { success, errorReason?, errorMessage?, transaction, network, payer }   (detail = errorMessage, deprecated)
 //   GET  /stats      counters since start, settled blocks
 //   GET  /           this documentation
 //
@@ -42,7 +42,9 @@ if (!stats.pay_to_since) stats.pay_to_since = new Date().toISOString();   // per
 function saveStats() { try { fs.mkdirSync(path.dirname(STATS_FILE), { recursive: true }); fs.writeFileSync(STATS_FILE, JSON.stringify(stats)); } catch {} }
 
 // Map the descriptive reasons of x402.verify() to short codes a client can branch on.
-// The text itself is returned as `detail`.
+// The text itself is returned as `invalidMessage` (verify) / `errorMessage` (settle), the names the x402 reference types and
+// the SDK's facilitator client parse (typescript/packages/core/src/types/facilitator.ts, httpFacilitatorClient.ts; upstream
+// #1030), and as `detail` until 0.3.0 for callers that read that name. Codes are the contract; the text is free and may change.
 const CODES = [
   [/already|already used|block_already/i, 'block_already_exists'],
   [/not the account frontier/i, 'frontier_moved'],
@@ -114,7 +116,20 @@ function checkRequirements(r) {
 }
 
 // deps: rpc(body) -> node JSON; workThreshold? (tests); sleep? (tests); settling? (Set shared with the seller path)
-async function verifyRequest(body, deps) {
+
+// Human-readable text beside the code, under the names the x402 reference types and SDK client parse: VerifyResponse.invalidMessage,
+// SettleResponse.errorMessage (kilkelly, x402-nano-exact-scheme-proposal PR #1, 2026-10-15). `detail` carried the same text since
+// 2026-09 and is kept as a duplicate until 0.3.0. The SDK's zod schemas strip unknown keys, so `detail` alone never reached SDK users.
+function withMessage(r) {
+  if (r && typeof r === 'object' && typeof r.detail === 'string') {
+    if ('isValid' in r && r.invalidMessage === undefined) r.invalidMessage = r.detail;
+    if ('success' in r && r.errorMessage === undefined) r.errorMessage = r.detail;
+  }
+  return r;
+}
+
+async function verifyRequest(body, deps) { return withMessage(await verifyRequestInner(body, deps)); }
+async function verifyRequestInner(body, deps) {
   const { paymentPayload, paymentRequirements } = body || {};
   if (!paymentPayload) return { isValid: false, invalidReason: 'invalid_request', detail: 'paymentPayload is required', payer: '' };
   const bad = checkRequirements(paymentRequirements);
@@ -164,7 +179,7 @@ async function settleRequest(body, deps) {
   let key = null;
   try { key = x402.blockHash(body.paymentPayload.payload.block).toUpperCase(); } catch { /* verify reports what is wrong */ }
   const run = () => settleLocked(body, deps);
-  return key ? withHashLock(key, run) : run();
+  return withMessage(await (key ? withHashLock(key, run) : run()));
 }
 async function settleLocked(body, deps) {
   const v = await verifyRequest(body, deps);
@@ -358,15 +373,15 @@ Endpoints (the x402 facilitator HTTP API; @x402/core and the x402 Python package
 
   POST /verify   body {"x402Version":2,"paymentPayload":{...},"paymentRequirements":{...}}
        -> {"isValid":true,"payer":"nano_..."}
-       -> {"isValid":false,"invalidReason":"<code>","detail":"<why>","payer":"nano_..."}
+       -> {"isValid":false,"invalidReason":"<code>","invalidMessage":"<why>","detail":"<why>","payer":"nano_..."}
 
   POST /settle   same body
        -> {"success":true,"transaction":"<block hash>","network":"nano:mainnet","payer":"nano_..."}
-       -> {"success":false,"errorReason":"<code>","detail":"<why>","transaction":"","network":"nano:mainnet","payer":"..."}
+       -> {"success":false,"errorReason":"<code>","errorMessage":"<why>","detail":"<why>","transaction":"","network":"nano:mainnet","payer":"..."}
           transaction is "" on every failure except confirmation_timeout, where it is the hash of the block that
           was processed but not confirmed within the poll budget (retry the same /settle: it is answered from the
           chain for 24 hours, success once confirmed; or check block_info), and block_already_exists for a block
-          this facilitator itself settled and answered success for (the hash; detail names the settle time)
+          this facilitator itself settled and answered success for (the hash; errorMessage names the settle time)
 
   GET  /stats    counters, one row per payTo address, the last settled blocks (human page: https://pursekeeper.dev/facilitator)
 
@@ -428,7 +443,7 @@ same block through this facilitator after confirmation_timeout (or after a lost 
 answered from the chain for 24 hours: no second broadcast, the confirmation poll runs again,
 success once the block is confirmed, confirmation_timeout until then. Once this facilitator
 has answered success for a block, a further /settle of it is a replay: block_already_exists as
-before, with transaction set to the hash and detail naming when it was settled, so a seller
+before, with transaction set to the hash and errorMessage naming when it was settled, so a seller
 whose success reply was lost still learns that the payment went through, and a seller that
 serves on success alone is not served twice. A block this facilitator did not broadcast
 answers block_already_exists with transaction "". When process itself fails
