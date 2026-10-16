@@ -203,7 +203,7 @@ async function rpc(body) {
 const workStats = { generated: 0, by_source: {}, by_tier: {}, last_error: '' };
 // tier: 'paid' (GPU, no per-minute limit; at most four proofs at once), 'payer' (free call from an account that has paid before: GPU, no
 // shared budget), 'free' (GPU while the shared budget lasts), 'free-slow' (budget spent: hosted key, then node).
-async function workFor(hash, { timeoutMs = 30_000, paid = false, knownPayer = false, threshold = x402.WORK_THRESHOLD } = {}) {
+async function workForOne(hash, { timeoutMs = 30_000, paid = false, knownPayer = false, threshold = x402.WORK_THRESHOLD } = {}) {
   let tier = paid ? 'paid' : knownPayer ? 'payer' : takeFreeGpu() ? 'free' : 'free-slow';
   const gpuOk = tier !== 'free-slow' && Date.now() >= gpuDownUntil;
   const sources = [...(gpuOk ? PAID_WORK_URLS : []).map(u => ({ name: workName(u), url: u, timeoutMs: paid ? 15_000 : 10_000, gpu: true })),
@@ -239,6 +239,27 @@ async function workFor(hash, { timeoutMs = 30_000, paid = false, knownPayer = fa
     workStats.last_error = lastErr;
   }
   throw new Error(lastErr);
+}
+
+// One proof per hash at a time, kept for a minute. Several distinct blocks on the same frontier (differing in
+// representative, say) presented at once used to cost one proof each: the x402 lock is per block hash, and verify
+// computes work over block.previous for every block that passes its cheaper checks, so a payer with one funded
+// account could buy K proofs for one payment by presenting K signed variants of the same send together. Now the
+// first computes it and the rest share it: at most one proof per frontier, which is what one block on that frontier
+// is worth, and a payer who moves their own frontier to make the next one spends a proof of their own each time
+// (kilkelly's question on kilkelly/x402-nano-exact-scheme-proposal#1, 2026-10-16). Work over a frontier is usable
+// only by that account's owner, so sharing it leaks nothing. A failed attempt is dropped at once so a retry asks again.
+const workPending = new Map();   // hash -> Promise<{ work, source, ms, tier }>
+const WORK_KEEP_MS = 60_000;
+async function workFor(hash, opts = {}) {
+  const key = String(hash).toUpperCase();
+  const pending = workPending.get(key);
+  if (pending) { const r = await pending; return { ...r, shared: true }; }
+  const p = workForOne(hash, opts);
+  workPending.set(key, p);
+  p.then(() => { const t = setTimeout(() => { if (workPending.get(key) === p) workPending.delete(key); }, WORK_KEEP_MS); if (t.unref) t.unref(); },
+         () => { if (workPending.get(key) === p) workPending.delete(key); });
+  return p;
 }
 
 // Accounts that have paid this server before, by any route. Free work for their frontier goes

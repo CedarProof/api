@@ -32,5 +32,26 @@ test('work valid for another hash is invalid here; every source failing throws w
   answers['http://first.test/#first'] = { work: other };
   answers['http://second.test/#second'] = { work: other };
   answers['http://node.test/rpc'] = { error: 'node says no' };
-  await assert.rejects(workFor(HASH, { threshold: THRESHOLD, timeoutMs: 1000 }), /node: node says no/);
+  // A hash of its own: a proof for HASH was served above and is kept for a minute (coalescing test below).
+  const hash2 = 'B'.repeat(64);
+  await assert.rejects(workFor(hash2, { threshold: THRESHOLD, timeoutMs: 1000 }), /node: node says no/);
+  // The failure is not kept: the next call for the same hash asks the sources again.
+  asked.length = 0;
+  await assert.rejects(workFor(hash2, { threshold: THRESHOLD, timeoutMs: 1000 }), /node: node says no/);
+  assert.equal(asked.length, 3);
+});
+// Several blocks on one frontier presented together cost one proof, not one each: the x402 lock is per block hash, so
+// K signed variants of the same send (different representative) all reached workFor at once and each bought a proof for
+// one payment (kilkelly, x402-nano-exact-scheme-proposal#1, 2026-10-16).
+test('concurrent calls for the same hash share one proof, and the proof is reused within the minute', async () => {
+  const hash3 = 'C'.repeat(64);   // its own hash: HASH's proof from the first test is still kept
+  const good3 = await N.computeWork(hash3, { workThreshold: THRESHOLD });
+  asked.length = 0;
+  answers['http://first.test/#first'] = { work: good3 };
+  const [a, b, c] = await Promise.all([1, 2, 3].map(() => workFor(hash3, { threshold: THRESHOLD, timeoutMs: 1000 })));
+  assert.equal(a.work, good3.toLowerCase()); assert.equal(b.work, a.work); assert.equal(c.work, a.work);
+  assert.equal(asked.length, 1, 'one source call for three concurrent requests');
+  assert.equal(a.shared, undefined); assert.equal(b.shared, true); assert.equal(c.shared, true);
+  const d = await workFor(hash3, { threshold: THRESHOLD, timeoutMs: 1000 });
+  assert.equal(d.work, a.work); assert.equal(d.shared, true); assert.equal(asked.length, 1, 'no new call within the minute');
 });
