@@ -1,32 +1,36 @@
 {
-  "addresses": [
-    {
-      "address": "nano_1i3y944esngqw6wb6ia68dotj4yuqctch9kx8ct65twt8ewi4rdcfgax7ggf",
-      "note": "pursekeeper's own x402 test client account (seed in secrets/x402-test.env). Funded from the hot wallet only to test the seller end to end; never a counterparty."
-    },
-    {
-      "address": "nano_1pgyb5sqbagkef1zdhzz71yqmqrshetd31kf6uojr4ehfjue1p1w6i5hwg7e",
-      "note": "pursekeeper's own x402 test seed, index 1: opened only by Oso Pepe's receive-courier job of 2026-10-02 (examples/purchases/oso-pepe-courier-2026-10-02/); funded from the hot wallet (ledger #371); never a counterparty."
-    },
-    {
-      "address": "nano_3yoowu9tr36aumhiqmnx8ce8dzafb64yekzmzdhxkmgk6hq3tu1uxosk54ny",
-      "note": "pursekeeper's throwaway for the 2026-10-10 llmrt clean-checkout gate, seed index 14 (the index llmrt's nano_send.py signs from); funded \u04fe0.01 ledger 395; signed by llmrt's nano_sign; swept back to the hot wallet after the gate"
-    },
-    {
-      "address": "nano_3obfgg33bqkqoj5rxp576th7bu4ikuwknpq4swyb3ugfr146y16si3ycu8ui",
-      "note": "pursekeeper's throwaway for the 2026-10-10 llmrt clean-checkout gate, seed index 0 (derived by llmrt's nano_pay, never read by their proxy); funded \u04fe0.01 ledger 394 by mistake; swept back to the hot wallet"
-    },
-    {
-      "address": "nano_3qgpdzwx5trwz1xdxetagx6yywu6wid5ko4sffgk8bftk4a6msn1hrpeq1e7",
-      "note": "pursekeeper's throwaway for the 2026-10-13 llmrt v3 re-run (seed index 14, the address the v3 proxy prints at startup); funded \u04fe0.01 ledger 418; opened and signed by llmrt's v3 proxy; swept back to the hot wallet 17:01Z (hash 86F0D1066905E17BFC9D2A6110C646BC0275BE3BCF4B2D0C3715BE52923EA1B7); never a counterparty"
-    },
-    {
-      "address": "nano_3o3pxia6zq8ccs8oqmhjdxf7885xggpi6fqz4re6sb64u8b64hndghq7drum",
-      "note": "pursekeeper's throwaway seed (index 14) for the 2026-10-15 unpaid re-run of llmrt's v3.1 payer-proxy bundle against the kepler door (examples/purchases/llmrt-v31-rerun-2026-10-15/); funded \u04fe0.01 from the hot wallet, swept back after; never a counterparty."
-    },
-    {
-      "address": "nano_3eba795eusrf66yk5k7uniz3wmt4u717g619z7zsij8yhuutybucrcntcmto",
-      "note": "pursekeeper's throwaway for the llmrt v3.2 payer-proxy re-run of 2026-10-15 (seed index 14, seed private on the box); funded 0.01 XNO from the hot wallet, swept back after; never a counterparty."
-    }
-  ]
+ "addresses": [
+  {
+   "address": "nano_1i3y944esngqw6wb6ia68dotj4yuqctch9kx8ct65twt8ewi4rdcfgax7ggf",
+   "note": "pursekeeper's own x402 test client account (seed in secrets/x402-test.env). Funded from the hot wallet only to test the seller end to end; never a counterparty."
+  },
+  {
+   "address": "nano_1pgyb5sqbagkef1zdhzz71yqmqrshetd31kf6uojr4ehfjue1p1w6i5hwg7e",
+   "note": "pursekeeper's own x402 test seed, index 1: opened only by Oso Pepe's receive-courier job of 2026-10-02 (examples/purchases/oso-pepe-courier-2026-10-02/); funded from the hot wallet (ledger #371); never a counterparty."
+  },
+  {
+   "address": "nano_3yoowu9tr36aumhiqmnx8ce8dzafb64yekzmzdhxkmgk6hq3tu1uxosk54ny",
+   "note": "pursekeeper's throwaway for the 2026-10-10 llmrt clean-checkout gate, seed index 14 (the index llmrt's nano_send.py signs from); funded \u04fe0.01 ledger 395; signed by llmrt's nano_sign; swept back to the hot wallet after the gate"
+  },
+  {
+   "address": "nano_3obfgg33bqkqoj5rxp576th7bu4ikuwknpq4swyb3ugfr146y16si3ycu8ui",
+   "note": "pursekeeper's throwaway for the 2026-10-10 llmrt clean-checkout gate, seed index 0 (derived by llmrt's nano_pay, never read by their proxy); funded \u04fe0.01 ledger 394 by mistake; swept back to the hot wallet"
+  },
+  {
+   "address": "nano_3qgpdzwx5trwz1xdxetagx6yywu6wid5ko4sffgk8bftk4a6msn1hrpeq1e7",
+   "note": "pursekeeper's throwaway for the 2026-10-13 llmrt v3 re-run (seed index 14, the address the v3 proxy prints at startup); funded \u04fe0.01 ledger 418; opened and signed by llmrt's v3 proxy; swept back to the hot wallet 17:01Z (hash 86F0D1066905E17BFC9D2A6110C646BC0275BE3BCF4B2D0C3715BE52923EA1B7); never a counterparty"
+  },
+  {
+   "address": "nano_3o3pxia6zq8ccs8oqmhjdxf7885xggpi6fqz4re6sb64u8b64hndghq7drum",
+   "note": "pursekeeper's throwaway seed (index 14) for the 2026-10-15 unpaid re-run of llmrt's v3.1 payer-proxy bundle against the kepler door (examples/purchases/llmrt-v31-rerun-2026-10-15/); funded \u04fe0.01 from the hot wallet, swept back after; never a counterparty."
+  },
+  {
+   "address": "nano_3eba795eusrf66yk5k7uniz3wmt4u717g619z7zsij8yhuutybucrcntcmto",
+   "note": "pursekeeper's throwaway for the llmrt v3.2 payer-proxy re-run of 2026-10-15 (seed index 14, seed private on the box); funded 0.01 XNO from the hot wallet, swept back after; never a counterparty."
+  },
+  {
+   "address": "nano_3ydt5r1rt549qng8jbzetyrzdhbteyd9bgw75fgrmszqbbfo6pdd57pe8jwe",
+   "note": "pursekeeper's throwaway for the llmrt v3.3 payer-proxy re-run of 2026-10-16 (seed index 14, seed private on the box); funded 0.01 XNO from the hot wallet, swept back after; never a counterparty."
+  }
+ ]
 }

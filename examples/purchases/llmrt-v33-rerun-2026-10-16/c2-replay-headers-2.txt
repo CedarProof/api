@@ -1,0 +1,14 @@
+HTTP/1.0 200 OK
+Server: BaseHTTP/0.6 Python/3.14.4
+Date: Fri, 16 Oct 2026 17:43:59 GMT
+Date: Fri, 16 Oct 2026 17:43:23 GMT
+Content-Type: application/json
+Access-Control-Allow-Origin: *
+Report-To: {"group":"cf-nel","max_age":604800,"endpoints":[{"url":"https://a.nel.cloudflare.com/report/v4?s=3rovNPohGSY%2FAtPCie18iBBqBWOxpZW8NYj7XMOKIy%2BcgWW9lBhseHUtz1owpTRZbUB0KC3CZiwejF7XGSiMShtHSDWxg8L16DJVj5ufF86i6SUkTPtF9Khh2BvfjGKY5OhD0Lcxw5WC06nDgWWDraoEoH%2BQsLRv%2BF2JKg%3D%3D"}]}
+Nel: {"report_to":"cf-nel","success_fraction":0.0,"max_age":604800}
+Server: cloudflare
+CF-RAY: a4b8dd91dad72682-ARN
+alt-svc: h3=":443"; ma=86400
+x-payer-replayed: 1
+content-length: 315
+

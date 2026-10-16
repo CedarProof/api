@@ -1,0 +1,21 @@
+PASS T1 allow_list_miss
+PASS T2 cap_exceeded
+PASS T3 cap_persisted
+PASS T4 malformed_quote
+PASS T4 malformed_quote
+PASS T5 passthrough
+PASS T6 paid_and_delivered
+PASS T7 rotated_payto_accepted
+PASS T7b per_call_ceiling
+PASS T7c quote_url_redirect
+PASS T8 slow_door_served
+PASS T9 hash_in_402_body
+PASS T10 first_call_402_has_hash
+background confirm settled quote=pay_test
+PASS T10b replay_no_second_pay
+PASS T11 unpaid_stays_402
+PASS T12 ask_forwards_payment_header
+PASS T13 inflight_join_no_second_pay
+PASS T14 sync_200_cached_and_replayed
+
+ALL PASS

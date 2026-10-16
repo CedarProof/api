@@ -1,0 +1,23 @@
+{
+    "account": "nano_3ydt5r1rt549qng8jbzetyrzdhbteyd9bgw75fgrmszqbbfo6pdd57pe8jwe",
+    "history": [
+        {
+            "type": "send",
+            "account": "nano_1jyx763fmsr851ieufnztwh7jed8sssixhd4bsgwcj3rd31iwxaxtendnhu3",
+            "amount": "1000000000000000000000000000",
+            "local_timestamp": "1792172598",
+            "height": "2",
+            "hash": "E2F76184F513540F39D971F713476A0C2BF7203E082B77330BBCD496A13AB68D",
+            "confirmed": "true"
+        },
+        {
+            "type": "receive",
+            "account": "nano_1xug1q5t7nxoj3ywwzokiea9jz8fq8qfgzp8pbyfr3co3e5xgj755uofu8ue",
+            "amount": "10000000000000000000000000000",
+            "local_timestamp": "1792172597",
+            "height": "1",
+            "hash": "5614FCA6D75AFCB7A49813762BB297AD2CB8CE0A363B2FBB82E1D329FE1E1C48",
+            "confirmed": "true"
+        }
+    ]
+}
