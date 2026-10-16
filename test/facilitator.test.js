@@ -347,3 +347,34 @@ test('codeFor: "network must be ..." is requirements_mismatch, not invalid_work 
   assert.equal(f.codeFor("work 0000000000000001 does not cover block.previous 2F74 at the send threshold fffffff800000000 (work is computed over the previous block hash, never over the new block's own hash)"), 'invalid_work');
   assert.equal(f.codeFor('scheme must be exact'), 'requirements_mismatch');
 });
+
+test('settle: a matching block the chain holds that this facilitator did not broadcast answers block_already_exists WITH the hash (scheme head 2c5607a2, Scenario 2, 2026-10-16)', async () => {
+  const n = node();
+  const b = makeBlock();
+  await n({ action: 'process', block: b });   // broadcast elsewhere (the payer's own node, another facilitator)
+  const h = N.hashBlock({ account: b.account, previous: b.previous, representative: b.representative, balance: b.balance, link: b.link }).toUpperCase();
+  const r = await f.settleRequest(body(b), deps(n));
+  assert.equal(r.success, false); assert.equal(r.errorReason, 'block_already_exists');
+  assert.equal(r.transaction, h, 'the hash is filled so the seller can apply its own served record');
+  assert.match(r.detail, /not broadcast through this facilitator/);
+  assert.equal(r.errorMessage, r.detail);
+});
+
+test('settle: a matching block the chain holds but has not confirmed answers block_awaiting_confirmation with the hash (Scenario 3: do not serve, resettle)', async () => {
+  const n = node({ confirm: false });
+  const b = makeBlock();
+  await n({ action: 'process', block: b });
+  const h = N.hashBlock({ account: b.account, previous: b.previous, representative: b.representative, balance: b.balance, link: b.link }).toUpperCase();
+  const v = await f.verifyRequest(body(b), deps(n));
+  assert.equal(v.isValid, false); assert.equal(v.invalidReason, 'block_awaiting_confirmation');
+  const r = await f.settleRequest(body(b), deps(n));
+  assert.equal(r.success, false); assert.equal(r.errorReason, 'block_awaiting_confirmation'); assert.equal(r.transaction, h);
+});
+
+test('settle: a chain-held block that sends the wrong amount still answers amount_mismatch with transaction "" (check 10 order unchanged)', async () => {
+  const n = node();
+  const b = makeBlock({ balance: (BALANCE - 1n).toString() });   // sends 1 raw
+  await n({ action: 'process', block: b });
+  const r = await f.settleRequest(body(b), deps(n));
+  assert.equal(r.success, false); assert.equal(r.errorReason, 'amount_mismatch'); assert.equal(r.transaction, '');
+});

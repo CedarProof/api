@@ -46,6 +46,7 @@ function saveStats() { try { fs.mkdirSync(path.dirname(STATS_FILE), { recursive:
 // the SDK's facilitator client parse (typescript/packages/core/src/types/facilitator.ts, httpFacilitatorClient.ts; upstream
 // #1030), and as `detail` until 0.3.0 for callers that read that name. Codes are the contract; the text is free and may change.
 const CODES = [
+  [/awaiting confirmation/i, 'block_awaiting_confirmation'],   // a block the chain holds, matching payTo and amount, not yet confirmed (x402#3432 check 10, 2026-10-16)
   [/already|already used|block_already/i, 'block_already_exists'],
   [/not the account frontier/i, 'frontier_moved'],
   [/not confirmed yet/i, 'frontier_unconfirmed'],
@@ -153,7 +154,10 @@ async function verifyRequestInner(body, deps) {
       // price is amount_mismatch (transaction stays empty), not block_already_exists.
       if (b.subtype && b.subtype !== 'send') return 'the block on the chain does not send anything (subtype ' + b.subtype + ')';
       if (b.amount !== undefined && String(b.amount) !== String(req.amount)) return 'the block on the chain sends ' + b.amount + ' raw; exactly ' + req.amount + ' raw required';
-      return true;
+      // A matching block (send, this amount, this payTo: the link was checked before seen() ran) is a payment to these
+      // requirements whoever broadcast it, so the chain's view is named: confirmed, or awaiting confirmation. settle fills
+      // transaction with the hash for both (scheme document head 2c5607a2, 2026-10-16: Scenarios 2 and 3).
+      return String(b.confirmed) === 'true' ? 'block already on the chain and confirmed' : 'block already on the chain, awaiting confirmation';
     },
     // A retried block is by now the payer's frontier: verify reads its amount and confirmation from the chain (alreadyLanded)
     blockInfo: h => deps.rpc({ action: 'block_info', json_block: 'true', hash: h }),
@@ -194,6 +198,15 @@ async function settleLocked(body, deps) {
       try { const h = up(x402.blockHash(body.paymentPayload.payload.block)); const b = ownBroadcast(h, req); if (b && b.answered) done = { hash: h, at: b.answeredAt }; } catch { /* verify said what is wrong */ }
     }
     if (done) return { success: false, errorReason: 'block_already_exists', detail: 'block ' + done.hash + ' was settled through this facilitator for the same payTo and amount and answered success at ' + done.at + '; a second success is not given for the same block', transaction: done.hash, network, payer: v.payer };
+    // A block the chain already holds that sends exactly this amount to this payTo, broadcast by someone else (the payer's
+    // own node, another facilitator): the hash is filled so the seller can tell a paid replay from a bad block and apply its
+    // own served record (Scenario 2 of the scheme document, head 2c5607a2), and block_awaiting_confirmation with the hash
+    // while it is unconfirmed (Scenario 3: do not serve yet, resettle). Until 2026-10-16 both answered block_already_exists
+    // with transaction "", on the ground that only own broadcasts were known to have paid; the subtype, amount and link
+    // checks in seen() now establish that from the chain.
+    if (/already on the chain/.test(v.detail || '')) {
+      try { const h = up(x402.blockHash(body.paymentPayload.payload.block)); return { success: false, errorReason: v.invalidReason, detail: v.detail + ' (hash ' + h + ', not broadcast through this facilitator)', transaction: h, network, payer: v.payer }; } catch { /* verify said what is wrong */ }
+    }
     return { success: false, errorReason: v.invalidReason, detail: v.detail, transaction: '', network, payer: v.payer };
   }
   const settling = deps.settling || new Set();
@@ -380,8 +393,11 @@ Endpoints (the x402 facilitator HTTP API; @x402/core and the x402 Python package
        -> {"success":false,"errorReason":"<code>","errorMessage":"<why>","detail":"<why>","transaction":"","network":"nano:mainnet","payer":"..."}
           transaction is "" on every failure except confirmation_timeout, where it is the hash of the block that
           was processed but not confirmed within the poll budget (retry the same /settle: it is answered from the
-          chain for 24 hours, success once confirmed; or check block_info), and block_already_exists for a block
-          this facilitator itself settled and answered success for (the hash; errorMessage names the settle time)
+          chain for 24 hours, success once confirmed; or check block_info), block_already_exists for a block the
+          chain already holds that sends exactly the required amount to payTo (the hash; errorMessage names the
+          settle time when this facilitator settled it, else says it was not broadcast here), and
+          block_awaiting_confirmation for such a block that is on the chain but not yet confirmed (the hash;
+          resettle until it is block_already_exists, do not serve before)
 
   GET  /stats    counters, one row per payTo address, the last settled blocks (human page: https://pursekeeper.dev/facilitator)
 
@@ -418,12 +434,13 @@ parsed answers with payer "".
      already holds is compared on subtype and amount first:
      one that sends another amount than required is refused
      as amount_mismatch, not as a replay (check 10 of the
-     scheme document, 2026-10-14)                             block_already_exists / amount_mismatch
+     scheme document, 2026-10-14); one that matches is named
+     confirmed or awaiting confirmation (since 2026-10-16)      block_already_exists / block_awaiting_confirmation / amount_mismatch
   8. block.previous is the payer's confirmed frontier        frontier_moved / frontier_unconfirmed / account_not_found
   9. account balance - block.balance == amount, exactly      amount_mismatch
  10. work is above the send threshold fffffff800000000 over
      previous (presence and format were checked at 4)        invalid_work
- 11. the block hash is not on the chain already              block_already_exists
+ 11. the block hash is not on the chain already              block_already_exists / block_awaiting_confirmation
   node unreachable                                           node_unavailable
 
 Envelope errors, outside the isValid/invalidReason shape:
@@ -445,8 +462,11 @@ success once the block is confirmed, confirmation_timeout until then. Once this 
 has answered success for a block, a further /settle of it is a replay: block_already_exists as
 before, with transaction set to the hash and errorMessage naming when it was settled, so a seller
 whose success reply was lost still learns that the payment went through, and a seller that
-serves on success alone is not served twice. A block this facilitator did not broadcast
-answers block_already_exists with transaction "". When process itself fails
+serves on success alone is not served twice. A block this facilitator did not broadcast but the
+chain holds, sending exactly the required amount to payTo, answers block_already_exists with the
+hash once confirmed and block_awaiting_confirmation with the hash before that (since 2026-10-16;
+until then both were block_already_exists with transaction ""): a seller keeps its own record of
+hashes served and serves once per hash (Scenarios 2 and 3 of the scheme document). When process itself fails
 or its reply is lost, the node's view of the hash decides: a block that landed is settled and
 polled as above; one that did not is reported with whether a rebuilt payment is safe.
 
