@@ -1,0 +1,12 @@
+{
+ "note": "reconstructed from the console transcript and chain; the original record file was overwritten by the 13:28:49Z run (same-minute stamp, fixed in client.js afterwards)",
+ "started": "2026-10-16T13:28:23Z",
+ "base": "https://nodes.nanswap.com",
+ "body": {"action": "work_generate", "hash": "049F48BE725402B4B6F40D4E5D9463B3C39DE9068F0F38F2EE792598450C0029"},
+ "quote": {"payTo": "nano_115hp31z6kh5d66pggb15s4mxchqx1aah9jtqbeuhjdwaoqxoxo7o1yzpodk", "basePriceRaw": "89418777943368107302533533", "minPaymentRaw": "2235469448584202682563338325", "minPaymentRawWithOwnWork": "89418777943368107302533533", "assetUsdPrice": "0.3355", "actionCredits": {"default": 1, "process": 5, "work_generate": 25}},
+ "frontier_before": "049F48BE725402B4B6F40D4E5D9463B3C39DE9068F0F38F2EE792598450C0029",
+ "signed": {"hash": "0565F96DD23810815F7836BFA78CC29C8D3FA4773D9C4D697D9533E3F63A0530", "amount_raw": "2235469448584202682563338325", "xno": 0.0022354694485842027, "credits": "25", "work_sent": ""},
+ "timing_ms": {"quote": 182, "frontier": 281, "signed": 313, "response": 1178, "round_trip": 864},
+ "response": {"status": 200, "x-402-credits-remaining": "0", "receipt": {"success": true, "network": "nano-mainnet", "asset": "XNO", "transaction": "0565F96DD23810815F7836BFA78CC29C8D3FA4773D9C4D697D9533E3F63A0530", "payer": "nano_1i3y944esngqw6wb6ia68dotj4yuqctch9kx8ct65twt8ewi4rdcfgax7ggf", "credits": "25", "remaining": "0"}, "body": {"difficulty": "fffffffb027e611f", "multiplier": "1.6031231713104201", "work": "f096c078c3ce348d"}},
+ "chain_check": {"confirmed": true, "subtype": "send", "height": 121, "work_on_block": "f096c078c3ce348d", "note": "the work Nanswap put on my payment block is the same value it served as the work_generate result, because I asked for work on my own frontier hash, which is exactly what the payment block needed"}
+}

@@ -1,0 +1,89 @@
+{
+ "started": "2026-10-16T13:28:49.149Z",
+ "base": "https://nodes.nanswap.com",
+ "body": "{\"frontier\":\"76A7B44A0E9F8E97BED2D6E89B949637520FF2A8ECB13B6518CF96B0FD3A4973\",\"open_block\":\"EB5E1924A54BF2151A2CF5BCCB6228153C75699CD2A11B0C7E0E5DA064FC7800\",\"representative_block\":\"76A7B44A0E9F8E97BED2D6E89B949637520FF2A8ECB13B6518CF96B0FD3A4973\",\"balance\":\"3715362281839746146995840982463199\",\"modified_timestamp\":\"1792157304\",\"block_count\":\"5119\",\"account_version\":\"2\",\"confirmation_height\":\"5119\",\"confirmation_height_frontier\":\"76A7B44A0E9F8E97BED2D6E89B949637520FF2A8ECB13B6518CF96B0FD3A4973\"}",
+ "steps": [
+  {
+   "at": "170ms",
+   "name": "quote",
+   "payTo": "nano_115hp31z6kh5d66pggb15s4mxchqx1aah9jtqbeuhjdwaoqxoxo7o1yzpodk",
+   "basePriceRaw": "89418777943368107302533533",
+   "minPaymentRaw": "2235469448584202682563338325",
+   "minWithOwnWork": "89418777943368107302533533",
+   "assetUsdPrice": "0.3355",
+   "actionCredits": {
+    "default": 1,
+    "process": 5,
+    "work_generate": 25
+   }
+  },
+  {
+   "at": "269ms",
+   "name": "frontier",
+   "account": "nano_1i3y944esngqw6wb6ia68dotj4yuqctch9kx8ct65twt8ewi4rdcfgax7ggf",
+   "asset": "XNO",
+   "frontier": "0565F96DD23810815F7836BFA78CC29C8D3FA4773D9C4D697D9533E3F63A0530",
+   "balance": "45503129336623274207757612375",
+   "representative": "nano_3arg3asgtigae3xckabaaewkx3bzsh7nwz7jkmjos79ihyaxwphhm6qgjps4"
+  },
+  {
+   "at": "1290ms",
+   "name": "own-work",
+   "work": "0ad754cdaf2fd31e"
+  },
+  {
+   "at": "1317ms",
+   "name": "signed",
+   "hash": "C2834B22FB41C70BD0BB66FFE971C077C5F6635DE5DFAE67F83CA98EEAF02A06",
+   "amount": "178837555886736214605067066",
+   "xno": 0.00017883755588673621,
+   "credits": "2",
+   "work": "0ad754cdaf2fd31e"
+  },
+  {
+   "at": "1791ms",
+   "name": "response",
+   "status": 200,
+   "round_trip_ms": 474,
+   "headers": {
+    "ratelimit-limit": "20000",
+    "ratelimit-remaining": "19999",
+    "ratelimit-reset": "86400",
+    "x-402-credits-remaining": "1",
+    "x-payment-response": "eyJzdWNjZXNzIjp0cnVlLCJuZXR3b3JrIjoibmFuby1tYWlubmV0IiwiYXNzZXQiOiJYTk8iLCJ0cmFuc2FjdGlvbiI6IkMyODM0QjIyRkI0MUM3MEJEMEJCNjZGRkU5NzFDMDc3QzVGNjYzNURFNURGQUU2N0Y4M0NBOThFRUFGMDJBMDYiLCJwYXllciI6Im5hbm9fMWkzeTk0NGVzbmdxdzZ3YjZpYTY4ZG90ajR5dXFjdGNoOWt4OGN0NjV0d3Q4ZXdpNHJkY2ZnYXg3Z2dmIiwidG9rZW4iOiJ4NDAyX2NkZDU5NjNmZTMzZjhhYmQ5NjNmOTFiYzhlODM0YjhkN2QwNTU5YjVlMjkzYzE2ZiIsImNyZWRpdHMiOiIyIiwicmVtYWluaW5nIjoiMSJ9"
+   },
+   "receipt": {
+    "success": true,
+    "network": "nano-mainnet",
+    "asset": "XNO",
+    "transaction": "C2834B22FB41C70BD0BB66FFE971C077C5F6635DE5DFAE67F83CA98EEAF02A06",
+    "payer": "nano_1i3y944esngqw6wb6ia68dotj4yuqctch9kx8ct65twt8ewi4rdcfgax7ggf",
+    "token": "x402_cdd…",
+    "credits": "2",
+    "remaining": "1"
+   },
+   "body": "{\"frontier\":\"76A7B44A0E9F8E97BED2D6E89B949637520FF2A8ECB13B6518CF96B0FD3A4973\",\"open_block\":\"EB5E1924A54BF2151A2CF5BCCB6228153C75699CD2A11B0C7E0E5DA064FC7800\",\"representative_block\":\"76A7B44A0E9F8E97BED2D6E89B949637520FF2A8ECB13B6518CF96B0FD3A4973\",\"balance\":\"3715362281839746146995840982463199\",\"modified_timestamp\":\"1792157304\",\"block_count\":\"5119\",\"account_version\":\"2\",\"confirmation_height\":\"5119\",\"confirmation_height_frontier\":\"76A7B44A0E9F8E97BED2D6E89B949637520FF2A8ECB13B6518CF96B0FD3A4973\"}"
+  }
+ ],
+ "hash": "C2834B22FB41C70BD0BB66FFE971C077C5F6635DE5DFAE67F83CA98EEAF02A06",
+ "amount_raw": "178837555886736214605067066",
+ "credits_bought": "2",
+ "status": 200,
+ "receipt_public": {
+  "success": true,
+  "network": "nano-mainnet",
+  "asset": "XNO",
+  "transaction": "C2834B22FB41C70BD0BB66FFE971C077C5F6635DE5DFAE67F83CA98EEAF02A06",
+  "payer": "nano_1i3y944esngqw6wb6ia68dotj4yuqctch9kx8ct65twt8ewi4rdcfgax7ggf",
+  "credits": "2",
+  "remaining": "1"
+ },
+ "headers": {
+  "ratelimit-limit": "20000",
+  "ratelimit-remaining": "19999",
+  "ratelimit-reset": "86400",
+  "x-402-credits-remaining": "1",
+  "x-payment-response": "eyJzdWNjZXNzIjp0cnVlLCJuZXR3b3JrIjoibmFuby1tYWlubmV0IiwiYXNzZXQiOiJYTk8iLCJ0cmFuc2FjdGlvbiI6IkMyODM0QjIyRkI0MUM3MEJEMEJCNjZGRkU5NzFDMDc3QzVGNjYzNURFNURGQUU2N0Y4M0NBOThFRUFGMDJBMDYiLCJwYXllciI6Im5hbm9fMWkzeTk0NGVzbmdxdzZ3YjZpYTY4ZG90ajR5dXFjdGNoOWt4OGN0NjV0d3Q4ZXdpNHJkY2ZnYXg3Z2dmIiwidG9rZW4iOiJ4NDAyX2NkZDU5NjNmZTMzZjhhYmQ5NjNmOTFiYzhlODM0YjhkN2QwNTU5YjVlMjkzYzE2ZiIsImNyZWRpdHMiOiIyIiwicmVtYWluaW5nIjoiMSJ9"
+ },
+ "finished": "2026-10-16T13:28:50.941Z"
+}
