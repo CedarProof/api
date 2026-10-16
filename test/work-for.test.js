@@ -55,3 +55,23 @@ test('concurrent calls for the same hash share one proof, and the proof is reuse
   const d = await workFor(hash3, { threshold: THRESHOLD, timeoutMs: 1000 });
   assert.equal(d.work, a.work); assert.equal(d.shared, true); assert.equal(asked.length, 1, 'no new call within the minute');
 });
+
+// Distinct accounts are distinct frontiers, one proof each, so a payer with many funded accounts can keep the work
+// sources busy at the route price (kilkelly, same thread, 2026-10-16). Paid proofs are capped in flight; the fifth is
+// refused before anything is broadcast, with the 402 asking for work attached. Free calls are bounded per IP elsewhere.
+test('paid proofs are capped at four in flight; a fifth paid call is refused at once, a free one is not', async () => {
+  const hashes = ['D', 'E', 'F', '1', '2', '3'].map(c => c.repeat(64));
+  const proofs = {};
+  for (const h of hashes) proofs[h] = (await N.computeWork(h, { workThreshold: THRESHOLD })).toLowerCase();
+  let release; const gate = new Promise(r => { release = r; });
+  globalThis.fetch = async (url, init) => { const h = JSON.parse(init.body).hash; await gate; return { ok: true, json: async () => ({ work: proofs[h] }) }; };
+  const four = hashes.slice(0, 4).map(h => workFor(h, { threshold: THRESHOLD, timeoutMs: 1000, paid: true }));
+  await assert.rejects(workFor(hashes[4], { threshold: THRESHOLD, timeoutMs: 1000, paid: true }), /4 proofs are being generated already; attach work computed over block.previous/);
+  const free = workFor(hashes[4], { threshold: THRESHOLD, timeoutMs: 1000 });
+  release();
+  const rs = await Promise.all(four);
+  for (let i = 0; i < 4; i++) assert.equal(rs[i].work, proofs[hashes[i]]);
+  assert.equal((await free).work, proofs[hashes[4]]);
+  const after = await workFor(hashes[5], { threshold: THRESHOLD, timeoutMs: 1000, paid: true });   // slots freed
+  assert.equal(after.work, proofs[hashes[5]]); assert.equal(after.shared, undefined);
+});

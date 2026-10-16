@@ -251,14 +251,27 @@ async function workForOne(hash, { timeoutMs = 30_000, paid = false, knownPayer =
 // only by that account's owner, so sharing it leaks nothing. A failed attempt is dropped at once so a retry asks again.
 const workPending = new Map();   // hash -> Promise<{ work, source, ms, tier }>
 const WORK_KEEP_MS = 60_000;
+// Paid proofs in flight are capped, as /v1/work's own slot count already was. Distinct accounts are distinct frontiers,
+// so a payer with many funded accounts buys one proof per account; each is paid at the route price, so the flood is
+// not a loss, but without a cap it queued every other workless payer behind it (kilkelly's Sybil question on the same
+// thread, 2026-10-16). Past the cap a workless block is refused before anything is broadcast, with the 402 naming the
+// alternative: attach work computed over block.previous and re-present the same signed block, since work sits outside
+// the signature. Blocks that arrive with work never touch this path.
+const PAID_WORK_MAX = Number(process.env.PAID_WORK_MAX || 4);
+let paidWorkBusy = 0;
 async function workFor(hash, opts = {}) {
   const key = String(hash).toUpperCase();
   const pending = workPending.get(key);
   if (pending) { const r = await pending; return { ...r, shared: true }; }
+  if (opts.paid && paidWorkBusy >= PAID_WORK_MAX)
+    throw new Error(PAID_WORK_MAX + ' proofs are being generated already; attach work computed over block.previous at ' + x402.WORK_THRESHOLD + ' and re-present the same signed block (work is outside the signature), or retry in a few seconds');
+  if (opts.paid) paidWorkBusy++;
+  workStats.paid_busy = paidWorkBusy;
   const p = workForOne(hash, opts);
+  const release = () => { if (opts.paid) paidWorkBusy--; workStats.paid_busy = paidWorkBusy; };
   workPending.set(key, p);
-  p.then(() => { const t = setTimeout(() => { if (workPending.get(key) === p) workPending.delete(key); }, WORK_KEEP_MS); if (t.unref) t.unref(); },
-         () => { if (workPending.get(key) === p) workPending.delete(key); });
+  p.then(() => { release(); const t = setTimeout(() => { if (workPending.get(key) === p) workPending.delete(key); }, WORK_KEEP_MS); if (t.unref) t.unref(); },
+         () => { release(); if (workPending.get(key) === p) workPending.delete(key); });
   return p;
 }
 
@@ -1134,7 +1147,7 @@ Endpoints
                               GPU first for paid calls and for known payers, falling back to the
                               hosted work sources or this node when the GPU path returns no work
                               (this text said "always" until 2026-09-29); at most four proofs are
-                              generated at once and a fifth call answers 503 with nothing charged
+                              generated at once and a fifth call answers 503 with nothing charged; a workless x402 block arriving while four are in flight is refused with a 402 that asks for work attached, nothing broadcast
 
 Example
   curl -s 'https://pursekeeper.dev/v1/fetch?url=https://example.com' \\
@@ -1203,7 +1216,7 @@ const server = http.createServer(async (req, res) => {
           r('/v1/fetch?url=', 'GET', 'fetches the absolute http(s) URL given in the required url query parameter and returns the page as plain text; a request whose url is missing, malformed, non-http or on a private host is refused with 400 before any payment is taken'),
           r('/v1/echo?msg=', 'GET', 'returns what you sent (test your payment client)'),
           r('/v1/hash', 'POST', 'sha256 of the request body, with server time'),
-          r('/v1/work', 'POST', 'Nano proof of work for {"hash": H} at the send threshold, from a GPU in about a second; 6 per minute per IP free; paid calls have no per-minute limit, at most four proofs are generated at once and a fifth call answers 503 with nothing charged'),
+          r('/v1/work', 'POST', 'Nano proof of work for {"hash": H} at the send threshold, from a GPU in about a second; 6 per minute per IP free; paid calls have no per-minute limit, at most four proofs are generated at once and a fifth call answers 503 with nothing charged; a workless x402 block arriving while four are in flight is refused with a 402 that asks for work attached, nothing broadcast'),
         ],
         free: [base + '/v1/verify', base + '/v1/receivable', base + '/v1/account_info', base + '/v1/process', base + '/v1/requests', base + '/v1/price', base + '/v1/stats', base + '/v1/x402'],
         payment_requirements: base + '/v1/x402',
@@ -1224,7 +1237,7 @@ const server = http.createServer(async (req, res) => {
       request_header: 'PAYMENT-SIGNATURE (X-PAYMENT also accepted): base64 JSON {x402Version:2, accepted, payload:{block}}',
       response_header: 'PAYMENT-RESPONSE: base64 JSON {success, transaction, network, payer}',
       block_rules: 'state block from your current confirmed frontier; balance = current balance - amount exactly; link = payTo; work optional (extra.work = "optional" refers to the work field of the payment block itself, on every route including /v1/work, whose product is work for the hash you name in the body): omit it or send "0" and this seller computes it before broadcasting; if you send work it must be valid at ' + x402.WORK_THRESHOLD + ' against previous; extra.workThreshold names that threshold',
-      work: 'POST /v1/work {"hash": "<frontier>"}: 6 per minute per IP free (GPU, about a second, within a shared budget of ' + FREE_GPU_PER_MIN + ' a minute; CPU after that), or pay ' + nano(PRICE_RAW) + ' NANO per work (same headers) with no per-minute limit, at most four proofs generated at once and a fifth call answering 503 with nothing charged; for sends to anyone else', example: '/examples/client-x402.js', spec: 'https://github.com/x402nano/schemes',
+      work: 'POST /v1/work {"hash": "<frontier>"}: 6 per minute per IP free (GPU, about a second, within a shared budget of ' + FREE_GPU_PER_MIN + ' a minute; CPU after that), or pay ' + nano(PRICE_RAW) + ' NANO per work (same headers) with no per-minute limit, at most four proofs generated at once and a fifth call answering 503 with nothing charged, a workless x402 block arriving while four are in flight refused with a 402 that asks for work attached, nothing broadcast; for sends to anyone else', example: '/examples/client-x402.js', spec: 'https://github.com/x402nano/schemes',
       work_sources: workSources() });
     if (u.pathname === '/v1/work' && req.method === 'POST') return workGenerate(req, res);
     if (u.pathname === '/v1/verify') return verifyBlock(req, res, u);
