@@ -264,7 +264,13 @@ async function workFor(hash, opts = {}) {
   const pending = workPending.get(key);
   if (pending) { const r = await pending; return { ...r, shared: true }; }
   if (opts.paid && paidWorkBusy >= PAID_WORK_MAX)
-    throw new Error(PAID_WORK_MAX + ' proofs are being generated already; attach work computed over block.previous at ' + x402.WORK_THRESHOLD + ' and re-present the same signed block (work is outside the signature), or retry in a few seconds');
+  {
+    // Code first, prose after: the scheme thread (kilkelly, scheme-proposal#1, 2026-10-17) asked where a defined refusal
+    // code would live; on the wire it is the leading token of the 402's `error`, so a client can match it without parsing.
+    const e = new Error(PAID_WORK_MAX + ' proofs are being generated already; attach work computed over block.previous at ' + x402.WORK_THRESHOLD + ' and re-present the same signed block (work is outside the signature), or retry in a few seconds');
+    e.code = 'work_unavailable';
+    throw e;
+  }
   if (opts.paid) paidWorkBusy++;
   workStats.paid_busy = paidWorkBusy;
   const p = workForOne(hash, opts);
@@ -550,7 +556,8 @@ async function chargeX402Locked(req, res, payload, key) {
     }
     // A used block whose reply is still in the replay cache but was refused there: say what the replay needs.
     const hint = key && served.has(key) && /already used/.test(v.reason) ? '; the reply it bought is replayed within ten minutes for the same method, URL and body only, and when the payment echoed the extra.session of the 402 it paid (a v2 client copies the accepted entry, so this is automatic) only to a payload echoing the same session; a payment that echoed no session is replayed on method, URL and body alone' : '';
-    return paymentRequired(res, 'x402: ' + v.reason + hint, req), false;
+    // A refusal that carries a defined code (work_unavailable) keeps the code as the first token of `error`.
+    return paymentRequired(res, (/^work_unavailable\b/.test(v.reason) ? '' : 'x402: ') + v.reason + hint, req), false;
   }
   // In `settling` for the whole serve, the alreadyLanded branch included: the facilitator shares the set, so its /verify
   // refuses the hash meanwhile (Ops Control HQ, 2026-09-28 22:34 UTC); its /settle queues on the same per-hash lock

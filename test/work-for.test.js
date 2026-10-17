@@ -66,7 +66,7 @@ test('paid proofs are capped at four in flight; a fifth paid call is refused at 
   let release; const gate = new Promise(r => { release = r; });
   globalThis.fetch = async (url, init) => { const h = JSON.parse(init.body).hash; await gate; return { ok: true, json: async () => ({ work: proofs[h] }) }; };
   const four = hashes.slice(0, 4).map(h => workFor(h, { threshold: THRESHOLD, timeoutMs: 1000, paid: true }));
-  await assert.rejects(workFor(hashes[4], { threshold: THRESHOLD, timeoutMs: 1000, paid: true }), /4 proofs are being generated already; attach work computed over block.previous/);
+  await assert.rejects(workFor(hashes[4], { threshold: THRESHOLD, timeoutMs: 1000, paid: true }), e => e.code === 'work_unavailable' && /4 proofs are being generated already; attach work computed over block.previous/.test(e.message));
   const free = workFor(hashes[4], { threshold: THRESHOLD, timeoutMs: 1000 });
   release();
   const rs = await Promise.all(four);

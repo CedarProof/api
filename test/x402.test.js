@@ -255,6 +255,11 @@ test('missing work without a workGenerate dep is rejected, and a bad source fail
   assert.equal(r2.ok, false); assert.match(r2.reason, /gpu down/);
   const r3 = await x.verify(payload(makeBlock({ work: '0' })), REQ, deps({ workGenerate: async () => '0000000000000001' }));
   assert.equal(r3.ok, false); assert.match(r3.reason, /below threshold/);
+  // A source that is merely busy (server.js workFor past its paid cap) throws with code work_unavailable; the reason
+  // then leads with that code so the 402's `error` is machine-matchable (scheme-proposal#1, kilkelly, 2026-10-17).
+  const busy = Object.assign(new Error('4 proofs are being generated already'), { code: 'work_unavailable' });
+  const r4 = await x.verify(payload(makeBlock({ work: '0' })), REQ, deps({ workGenerate: async () => { throw busy; } }));
+  assert.equal(r4.ok, false); assert.match(r4.reason, /^work_unavailable: 4 proofs/);
 });
 
 // pyfile-toolkit, 2026-10-05: a workless block at a facilitator with no work source used to fail the shape

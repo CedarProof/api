@@ -194,7 +194,8 @@ async function verify(payload, required, deps) {
     if (needWork || !validWork(block.work)) {
       if (!deps.workGenerate) return fail('work ' + block.work + ' does not cover block.previous ' + block.previous + ' at the send threshold ' + threshold + ' (work is computed over the previous block hash, never over the new block\'s own hash)', payer);
       let w;
-      try { w = await deps.workGenerate(block.previous); } catch (e) { return fail('could not generate work: ' + e.message, payer); }
+      try { w = await deps.workGenerate(block.previous); }
+      catch (e) { return fail((e && e.code === 'work_unavailable' ? 'work_unavailable: ' : 'could not generate work: ') + e.message, payer); }
       if (!w || !validWork(w)) return fail('could not generate work' + (w ? ' (source returned work below threshold)' : ''), payer);
       block.work = String(w).toLowerCase();
       workBy = 'seller';
