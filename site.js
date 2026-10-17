@@ -451,7 +451,7 @@ const KEEP_MS = 30 * 24 * 3600_000;
 let sellersCache = { at: 0, data: null };
 function probeLogAppend(checked_at, list, probes) {
   try {
-    const rows = list.map((sel, i) => probes[i].door === 'mail' ? null : JSON.stringify({ t: checked_at, id: sel.id, ok: probes[i].reachable, status: probes[i].status, ms: probes[i].ms })).filter(Boolean);
+    const rows = list.map((sel, i) => probes[i].door === 'mail' ? null : JSON.stringify({ t: checked_at, id: sel.id, ok: probes[i].reachable, status: probes[i].status, ms: probes[i].ms, ...(probes[i].rail !== undefined ? { rail: probes[i].rail } : {}) })).filter(Boolean);
     if (rows.length) fs.appendFileSync(PROBE_LOG, rows.join('\n') + '\n');
   } catch {}
 }
@@ -463,6 +463,7 @@ function probeHistory() {
     const t = Date.parse(r.t); if (!(t >= Date.now() - KEEP_MS)) continue; keep.push(ln);
     if (!(t >= cutoff)) continue;
     const h = out[r.id] ||= { probes: 0, reachable: 0, since: r.t }; h.probes++; if (r.ok) h.reachable++;
+    if (r.rail !== undefined) { h.rail_checked = (h.rail_checked || 0) + 1; h.rail_open = (h.rail_open || 0) + (r.rail === 'open' ? 1 : 0); }
   }
   for (const h of Object.values(out)) h.fraction = +(h.reachable / h.probes).toFixed(3);
   if (lines.length > keep.length + 5000) { try { fs.writeFileSync(PROBE_LOG, keep.join('\n') + '\n'); } catch {} }
@@ -479,7 +480,21 @@ async function probe(sel) {
   try {
     const r = await fetch(sel.probe.url || sel.endpoint, { method: sel.probe.method || 'GET', headers: sel.probe.headers || {}, body: sel.probe.body, redirect: 'manual', signal: AbortSignal.timeout(8000) });
     const ok = r.status === (sel.probe.expect || 402);
-    return { reachable: ok, status: r.status, ms: Date.now() - t0 };
+    const out = { reachable: ok, status: r.status, ms: Date.now() - t0 };
+    // Optional rail check (2026-10-17): a multi-rail seller whose free status route answers 200 whether or not its Nano
+    // door is open (parley: Nano and Base watchers read unhealthy, Solana only, while /v1/status stayed 200) names
+    // probe.rail = { path, match, field }: walk the JSON body by dotted path, pick the array element whose keys equal
+    // match, read field; true = 'open', anything else = 'closed', unreadable = null. Reachability stays HTTP-only.
+    if (sel.probe.rail && ok) {
+      try {
+        let v = await r.json();
+        for (const k of String(sel.probe.rail.path || '').split('.').filter(Boolean)) v = v?.[k];
+        if (Array.isArray(v) && sel.probe.rail.match) v = v.find(e => Object.entries(sel.probe.rail.match).every(([mk, mv]) => e?.[mk] === mv));
+        const val = sel.probe.rail.field ? v?.[sel.probe.rail.field] : v;
+        out.rail = val === true ? 'open' : val === undefined ? null : 'closed';
+      } catch { out.rail = null; }
+    }
+    return out;
   } catch (e) {
     return { reachable: false, status: null, ms: Date.now() - t0, error: String(e.cause?.code || e.name || e.message).slice(0, 60) };
   }
@@ -492,7 +507,7 @@ async function sellers(force) {
   probeLogAppend(checked_at, list, probes);
   const hist = probeHistory();
   sellersCache = { at: Date.now(), data: { checked_at,
-    probe: { what: 'one unpaid request per seller, expecting the status the seller declared (normally 402; a seller whose paid route is not a plain GET may name a separate free status route, shown in the entry); it pays nothing and measures no settlement; a seller reached only by mail is not probed and shows live.door = "mail"', every_minutes: 10, timeout_ms: 8000, states: ['reachable', 'unreachable'], history_days: 7, history_since: '2026-09-20', delisting: 'never for downtime; only when the seller asks. The only time-based rule is the second half of the newcomer credit, which needs 14 days of answered probes.' },
+    probe: { what: 'one unpaid request per seller, expecting the status the seller declared (normally 402; a seller whose paid route is not a plain GET may name a separate free status route, shown in the entry); it pays nothing and measures no settlement; a seller reached only by mail is not probed and shows live.door = "mail"; a multi-rail seller whose status route stays 200 while its Nano door is closed may name a rail check (probe.rail: a field in its own status body), logged as live.rail = open | closed and counted in history_7d.rail_open, since 2026-10-17', every_minutes: 10, timeout_ms: 8000, states: ['reachable', 'unreachable'], history_days: 7, history_since: '2026-09-20', delisting: 'never for downtime; only when the seller asks. The only time-based rule is the second half of the newcomer credit, which needs 14 days of answered probes.' },
     sellers: list.map((sel, i) => ({ ...sel, live: probes[i], history_7d: hist[sel.id] || null })) } };
   return sellersCache.data;
 }
@@ -503,9 +518,9 @@ function sellerRows(sd) {
   if (!sd.sellers.length) return '<p class="muted">None yet.</p>';
   return `<table>${sd.sellers.map(s => {
     const l = s.live;
-    const live = l.door === 'mail' ? `<b>mail door</b>, not probed` : l.reachable ? `<b>reachable</b>, answered ${l.status} in ${l.ms} ms` : `<b>unreachable</b> at last check${l.status ? ` (HTTP ${l.status})` : l.error ? ` (${esc(l.error)})` : ''}`;
+    const live = (l.door === 'mail' ? `<b>mail door</b>, not probed` : l.reachable ? `<b>reachable</b>, answered ${l.status} in ${l.ms} ms` : `<b>unreachable</b> at last check${l.status ? ` (HTTP ${l.status})` : l.error ? ` (${esc(l.error)})` : ''}`) + (l.rail ? `; Nano rail <b>${l.rail}</b> by the seller's own status` : '');
     const h = s.history_7d;
-    const hist = h ? `<br>7 d: ${h.reachable}/${h.probes} probes reachable` : '';
+    const hist = h ? `<br>7 d: ${h.reachable}/${h.probes} probes reachable${h.rail_checked ? `; Nano rail open on ${h.rail_open || 0}/${h.rail_checked} checks` : ''}` : '';
     return `<tr><td class="num"><small>${live}<br>${sd.checked_at.slice(11, 16)} UTC${hist}</small></td><td><b>${esc(s.name)}</b> by ${esc(s.operator)}${s.built_for_this ? ' <small class="muted">(Nano added after pursekeeper asked)</small>' : ''}<br>${esc(s.what)}<br><small>Price: ${esc(s.price)}. Endpoint: <code>${esc(s.endpoint)}</code>. ${esc(s.pay)}</small><br><small>Verified ${s.verified.date} by a real payment, block ${hash(s.verified.block)} (ledger #${s.verified.ledger_id}): ${esc(s.verified.how)}. ${s.docs ? `<a href="${esc(s.docs)}">Docs</a>` : ''}${s.source ? ` · <a href="${esc(s.source)}">Source</a>` : ''}</small>${s.note ? `<br><small class="muted">${esc(s.note)}</small>` : ''}</td></tr>`;
   }).join('')}</table>`;
 }
