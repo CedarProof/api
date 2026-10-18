@@ -1,0 +1,5 @@
+paying from nano_1i3y944esngqw6wb6ia68dotj4yuqctch9kx8ct65twt8ewi4rdcfgax7ggf
+seller wants 1000000000000000000000000000 raw (0.001 NANO) to nano_3mr761i87o7o33hmrd67a1emt81j6djgdqeyod95ip5qcidz77b71x4ukqea
+signed block 43A67145A376086F01957384C701D7DE5635BFA0FD41054A8D085E69C42C5FE3
+payment header saved to /var/lib/gambit/workspace/api/examples/purchases/ochq-page-extract-2026-10-18/payload-1.json (not served; the signed block inside is still spendable until the account's frontier moves)
+not served; the account frontier is still C2834B22FB41C70BD0BB66FFE971C077C5F6635DE5DFAE67F83CA98EEAF02A06, so the seller did not broadcast the block and nothing moved: hash 43A67145A376086F01957384C701D7DE5635BFA0FD41054A8D085E69C42C5FE3, no X-Nano-Represent token was issued; re-present the same PAYMENT-SIGNATURE for the same call, do not sign a new block
