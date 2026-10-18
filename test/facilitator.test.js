@@ -188,6 +188,15 @@ test('verify: a v1 envelope -> unsupported_x402_version, not invalid_block (C1)'
   assert.equal(r.isValid, false); assert.equal(r.invalidReason, 'unsupported_x402_version'); assert.equal(r.payer, '');
 });
 
+// Ops Control HQ page-extract, 2026-10-18: a 402 whose resource.serviceName has 34 characters is echoed into the payload by
+// every client and fails @x402/core's ResourceInfo cap (32); the refusal names the field instead of pointing at the block.
+test('verify: resource.serviceName over 32 characters -> invalid_block with the field named', async () => {
+  const b = body(makeBlock()); b.paymentPayload.resource = { url: 'https://example.com/v1/x', serviceName: 'Ops Control HQ Nano Page Extraction' };
+  const r = await f.verifyRequest(b, deps(node()));
+  assert.equal(r.isValid, false); assert.equal(r.invalidReason, 'invalid_block');
+  assert.match(r.invalidMessage, /resource\.serviceName: .*32/);
+});
+
 test('verify: accepted.payTo differs from requirements.payTo -> invalid_payto (C2, documented as such)', async () => {
   const other = { ...REQ, payTo: 'nano_3njeurfzgpwpnqjxoytfnqa7ezbgkordga8e8jg74ey77kww5d5emjjyzrhp' };
   const b = body(makeBlock()); b.paymentPayload.accepted = other;

@@ -68,6 +68,16 @@ function decodePayment(value) {
 const up = s => String(s).toUpperCase();
 const nanoPrefix = a => String(a).replace(/^xrb_/, 'nano_');
 
+// First zod issue of a failed parse as " (path: message)", bounded; "" when the error carries no issues.
+function schemaIssue(err) {
+  try {
+    const i = err && err.issues && err.issues[0];
+    if (!i) return '';
+    const path = (i.path || []).join('.') || 'payload';
+    return ' (' + path + ': ' + String(i.message || i.code || '').slice(0, 120) + ')';
+  } catch { return ''; }
+}
+
 // Hash of a payload block over its five signed fields, normalised as verify() normalises them (nano_ prefix, upper-case
 // hex); throws on a malformed block. Exported so the seller can key a per-block lock before verify() runs: a second
 // concurrent request with the same block used to pass seen() too (Ops Control HQ, 2026-09-28 22:34 UTC).
@@ -94,7 +104,10 @@ async function verify(payload, required, deps) {
     if (!payload || typeof payload !== 'object') return fail('payload does not match x402 v2 PaymentPayload schema');
     if (payload.x402Version !== X402_VERSION) return fail('x402Version must be 2 (got ' + JSON.stringify(payload.x402Version) + ')');
     const parsed = parsePaymentPayload(payload);
-    if (!parsed.success) return fail('payload does not match x402 v2 PaymentPayload schema');
+    // Name the first failing field: a seller's 402 that breaks the ResourceInfo caps (serviceName and each tag at most
+    // 32 printable ASCII characters, at most 5 tags) is echoed verbatim into the payload by every client and refused
+    // here, and "does not match the schema" alone sent the seller looking at the block (Ops Control HQ, 2026-10-18).
+    if (!parsed.success) return fail('payload does not match x402 v2 PaymentPayload schema' + schemaIssue(parsed.error));
     const p = parsed.data;
 
     // (a) the client accepted exactly what we asked for
