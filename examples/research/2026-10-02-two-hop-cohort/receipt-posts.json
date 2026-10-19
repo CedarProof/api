@@ -1,6 +1,6 @@
 {
- "generated_at": "2026-10-15T12:38:58Z",
- "cohort": "cohort-2026-10-12.json",
+ "generated_at": "2026-10-19T08:06:23Z",
+ "cohort": "cohort-2026-10-19.json",
  "rule": "Ties each checkout (pass-through) receipt in a cohort run to the Subnano event that paid it,\nand writes the public receipt-posts.json in the cohort directory (cohort run #3 prep, 2026-10-13).\n\n    python3 subnano/receipt-posts.py cohort-YYYY-MM-DD.json\n\nSources, matched by amount (exact after the venue fee) and time (nearest, within 900 s of the\nreceipt's ledger booking time):\n  sale        Subnano \"You made a sale\" mail (private inbox): post title + purchase amount; buyer is\n              \"Someone\" (the mail never names the buyer) -> declared kind stays unlabelled here.\n  tip         /api/posts/<id>/tip-activities (public): createdAt, amountReceivedRaw (gross),\n              tipper.authorKind (venue label) -> declared kind = that label, source tip:<id>.\n  comment-tip /api/posts/<id>/comments (public): a comment with tip_status \"paid\" carries\n              tip_amount_received_raw (gross) and the commenter's author_kind -> source comment:<id>.\nOutput rows carry only public facts (receipt id, post id, event kind, venue timestamp, label).",
  "receipts": {
   "91": {
@@ -361,6 +361,60 @@
    "source": "tip:e3fd0cb2-e137-4919-8fee-36c3ad0b613d",
    "declared_kind": "agent",
    "declared_by": "Nano Maxi"
+  },
+  "409": {
+   "post": "9805ceff-ce6d-4a68-9d6a-58a0cee3544c",
+   "event": "sale",
+   "venue_ts": "2026-10-12T10:52:03Z",
+   "dt_s": 58.8,
+   "source": "mail",
+   "declared_kind": "unlabelled",
+   "declared_by": null
+  },
+  "410": {
+   "post": "9805ceff-ce6d-4a68-9d6a-58a0cee3544c",
+   "event": "tip",
+   "venue_ts": "2026-10-12T13:50:20Z",
+   "dt_s": 4.5,
+   "source": "tip:76022672-8f38-4eba-8668-e0ee05481b44",
+   "declared_kind": "human",
+   "declared_by": "Smokie"
+  },
+  "411": {
+   "post": "9805ceff-ce6d-4a68-9d6a-58a0cee3544c",
+   "event": "sale",
+   "venue_ts": "2026-10-12T13:52:03Z",
+   "dt_s": 59.9,
+   "source": "mail",
+   "declared_kind": "unlabelled",
+   "declared_by": null
+  },
+  "414": {
+   "post": "9805ceff-ce6d-4a68-9d6a-58a0cee3544c",
+   "event": "sale",
+   "venue_ts": "2026-10-13T12:32:02Z",
+   "dt_s": 27.6,
+   "source": "mail",
+   "declared_kind": "unlabelled",
+   "declared_by": null
+  },
+  "420": {
+   "post": "9805ceff-ce6d-4a68-9d6a-58a0cee3544c",
+   "event": "sale",
+   "venue_ts": "2026-10-13T20:10:03Z",
+   "dt_s": 57.1,
+   "source": "mail",
+   "declared_kind": "unlabelled",
+   "declared_by": null
+  },
+  "427": {
+   "post": "9805ceff-ce6d-4a68-9d6a-58a0cee3544c",
+   "event": "sale",
+   "venue_ts": "2026-10-15T12:38:03Z",
+   "dt_s": 58.7,
+   "source": "mail",
+   "declared_kind": "unlabelled",
+   "declared_by": null
   }
  }
 }
