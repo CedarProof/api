@@ -1,0 +1,21 @@
+HTTP/2 402 
+date: Mon, 19 Oct 2026 00:31:04 GMT
+content-type: application/json; charset=utf-8
+cf-ray: a4cbad7d6bf18daa-HEL
+cf-cache-status: DYNAMIC
+cache-control: no-store
+set-cookie: __cf_bm=Up8EzIw2TACPxDAAdcIh51f6fT1cfQorktFuQ0fo_yg-1792369863.2621298-1.0.1.1-B8cSLevdGdKAAJ0lR6c_WldCQFcQ7mBLLFWINlejdqkGIRSXJHUTjWdIcbcsHoBfVRQ0VsYZdYlFdTT8I0DC9Q3pg3dAFf.DqKL5cJp71pP7guqW13Q1aXeagjq56Z0A; HttpOnly; SameSite=None; Secure; Path=/; Domain=supabase.co; Expires=Mon, 19 Oct 2026 01:01:04 GMT
+server: cloudflare
+vary: Accept-Encoding
+x-content-type-options: nosniff
+endpoint-load-metrics: application_utilization:10,named_metrics.queue_depth:10
+payment-required: eyJ4NDAyVmVyc2lvbiI6MiwicmVzb3VyY2UiOnsidXJsIjoiaHR0cHM6Ly90a29xa2tuc2V6eGF2dHhmeXdrbS5zdXBhYmFzZS5jby9mdW5jdGlvbnMvdjEvbmFuby1ucG0tcmlzay92MS9wYWdlLWV4dHJhY3Q/dXJsPWh0dHBzJTNBJTJGJTJGcHVyc2VrZWVwZXIuZGV2JTJGc2VsbGVycyIsImRlc2NyaXB0aW9uIjoiRXh0cmFjdCBvbmUgcHVibGljbHkgcmVzb2x2YWJsZSBIVFRQUyB3ZWJwYWdlIGludG8gY2xlYW4gdGV4dCwgTWFya2Rvd24sIGhlYWRpbmdzLCBsaW5rcywgYW5kIHRpdGxlLiBObyBKYXZhU2NyaXB0IHJlbmRlcmluZyBvciBwYXl3YWxsIGJ5cGFzcy4gUGF5bWVudCBzZXR0bGVzIG9ubHkgZm9yIGEgc3VjY2Vzc2Z1bCBleHRyYWN0aW9uLiIsIm1pbWVUeXBlIjoiYXBwbGljYXRpb24vanNvbiIsInNlcnZpY2VOYW1lIjoiT3BzQ29udHJvbEhRIE5hbm8gUGFnZSBFeHRyYWN0IiwidGFncyI6WyJuYW5vIiwid2ViIiwicGFnZS1leHRyYWN0IiwibWFya2Rvd24iLCJyZXNlYXJjaCJdfSwiYWNjZXB0cyI6W3sic2NoZW1lIjoiZXhhY3QiLCJuZXR3b3JrIjoibmFubzptYWlubmV0IiwiYW1vdW50IjoiMTAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMCIsImFzc2V0IjoiWE5PIiwicGF5VG8iOiJuYW5vXzNtcjc2MWk4N283bzMzaG1yZDY3YTFlbXQ4MWo2ZGpnZHFleW9kOTVpcDVxY2lkejc3YjcxeDR1a3FlYSIsIm1heFRpbWVvdXRTZWNvbmRzIjozMDAsImV4dHJhIjp7fX1dfQ==
+sb-gateway-version: 1
+sb-project-ref: tkoqkknsezxavtxfywkm
+sb-request-id: 01a15191-aa62-797a-b0f8-6297e6235e52
+x-deno-execution-id: d843c4a5-6012-4e1e-ba58-c4d73fd02c9d
+x-sb-edge-region: eu-central-1
+x-served-by: supabase-edge-runtime
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+alt-svc: h3=":443"; ma=86400
+

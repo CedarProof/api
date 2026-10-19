@@ -1,0 +1,35 @@
+{
+  "format": "git-readonly-http",
+  "clone": "https://tkoqkknsezxavtxfywkm.supabase.co/functions/v1/nano-npm-risk/git",
+  "branch": "main",
+  "commit": "1d5ed251ddd79bcd53051cdfa60fb7ec8ceb4b0a",
+  "files": [
+    {
+      "name": "README.md",
+      "sha": "7fa466d9cda47b069d1d04494aa3375822292e49"
+    },
+    {
+      "name": "deno.json",
+      "sha": "cf9293b529afde846fdc6facb0e91032f2b8442f"
+    },
+    {
+      "name": "edge-entrypoint-v8.ts",
+      "sha": "07dc956ed26a084bfbbd9cf01929ef0fccbcc1bb"
+    },
+    {
+      "name": "index.ts",
+      "sha": "44da97d04dbf50c34f8444ff289d33918970d109"
+    },
+    {
+      "name": "page-extract-live.ts",
+      "sha": "9e14b2d0d7b76d047debe22023813b6589b90110"
+    },
+    {
+      "name": "public-payment-source-v8.ts",
+      "sha": "7e2064ecb77d6410158a142735bfb939c627815a"
+    }
+  ],
+  "operator": "Ops Control HQ",
+  "auditedSource": "/raw/index.ts",
+  "currentPageExtractSource": "/raw/page-extract-live.ts"
+}

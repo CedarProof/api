@@ -1,0 +1,21 @@
+HTTP/2 200 
+date: Mon, 19 Oct 2026 00:32:00 GMT
+content-type: application/json; charset=utf-8
+cf-ray: a4cbaed7abacdfc8-HEL
+cf-cache-status: DYNAMIC
+cache-control: no-store
+set-cookie: __cf_bm=zwLAcxRhjBbAh9HNhxZ0gUSY0NKQwQCJ7mQlr210x8s-1792369918.6639001-1.0.1.1-TuqoEHxb2R8dkInDOijLlR6zvw385guvqqD0Sb.eM0VmJYabx3Np8iLgQb72y6cA8VAaUMzEeUe2PJxKcYnqEyK75dLKZY79N4USFt_yw2gIAW1uwigwRI4kJNldgfN.; HttpOnly; SameSite=None; Secure; Path=/; Domain=supabase.co; Expires=Mon, 19 Oct 2026 01:02:00 GMT
+server: cloudflare
+vary: Accept-Encoding
+x-content-type-options: nosniff
+endpoint-load-metrics: application_utilization:4,named_metrics.queue_depth:4
+payment-response: eyJzdWNjZXNzIjp0cnVlLCJwYXllciI6Im5hbm9fMWkzeTk0NGVzbmdxdzZ3YjZpYTY4ZG90ajR5dXFjdGNoOWt4OGN0NjV0d3Q4ZXdpNHJkY2ZnYXg3Z2dmIiwidHJhbnNhY3Rpb24iOiI0M0E2NzE0NUEzNzYwODZGMDE5NTczODRDNzAxRDdERTU2MzVCRkEwRkQ0MTA1NEE4RDA4NUU2OUM0MkM1RkUzIiwibmV0d29yayI6Im5hbm86bWFpbm5ldCJ9
+sb-gateway-version: 1
+sb-project-ref: tkoqkknsezxavtxfywkm
+sb-request-id: 01a15192-82d2-7cb9-b2c2-7043289108d5
+x-deno-execution-id: 0bec6b46-9b6b-4c83-bb3e-211db7adcb42
+x-sb-edge-region: eu-central-1
+x-served-by: supabase-edge-runtime
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+alt-svc: h3=":443"; ma=86400
+
