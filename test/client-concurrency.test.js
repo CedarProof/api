@@ -9,8 +9,8 @@
 // reading the same frontier, 1 of 10 and the nine losers told to sign anew, not to re-present; (3) a receive by another
 // writer between the frontier read and the paid call: that block is dead, the client says so, the next writer continues;
 // (4) a lost reply after the block landed: the client reads the fate from the account and says re-present, and the
-// writers behind it continue; (5) a live holder past NANO_LOCK_WAIT_MS: exit 5, nothing signed, nothing sent; (6) a stale
-// holder (process gone, or older than NANO_LOCK_MAX_MS) is taken over.
+// writers behind it continue; (5) a fresh live holder past NANO_LOCK_WAIT_MS: exit 5, nothing signed, nothing sent;
+// (6) a dead holder is taken over; (7) a live holder past NANO_LOCK_MAX_MS is never taken over, and can resume safely.
 'use strict';
 const test = require('node:test');
 const assert = require('node:assert/strict');
@@ -34,9 +34,12 @@ const randomHash = () => require('node:crypto').randomBytes(32).toString('hex').
 //   the uncoordinated collision the way the model's schedule does; without it the fastest process may finish first).
 // opts.receiveAfter: right after the n-th account_info reply, another writer lands a receive (frontier moves, balance grows).
 // opts.loseReplyOnce: the first paid call lands the block, then the socket is destroyed before any reply.
+// opts.pauseFirstInfo: pause the first account_info reply after its caller holds the lock, until resumeInfo().
 function mock(opts = {}) {
   const state = { frontier: randomHash(), balance: '5000000000000000000000000000', chain: new Set(), issued: new Set(), landed: 0, served: 0, refused: 0, probes: 0, infoReplies: 0, paidCalls: 0 };
   const waiting = [];
+  let firstInfoSeen, resumeFirstInfo, infoPaused = false;
+  const firstInfo = new Promise(resolve => { firstInfoSeen = resolve; });
   const info = () => ({ found: true, frontier: state.frontier, balance_raw: state.balance, representative: PAY_TO, block_count: 1 });
   let lost = false, barrierDone = false;   // the barrier is one-shot: the losers' later fate reads must not wait behind it
   const server = http.createServer((req, res) => {
@@ -44,6 +47,7 @@ function mock(opts = {}) {
     const json = (code, body, headers = {}) => { res.writeHead(code, { 'content-type': 'application/json', ...headers }); res.end(JSON.stringify(body)); };
     if (u.pathname === '/v1/account_info') {
       const reply = () => { state.infoReplies++; json(200, info()); if (opts.receiveAfter && state.infoReplies === opts.receiveAfter) { state.frontier = randomHash(); state.balance = (BigInt(state.balance) + 1000n).toString(); } };
+      if (opts.pauseFirstInfo && !infoPaused) { infoPaused = true; resumeFirstInfo = reply; firstInfoSeen(); return; }
       if (opts.barrier && !barrierDone) { waiting.push(reply); if (waiting.length >= opts.barrier) { barrierDone = true; while (waiting.length) waiting.shift()(); } return; }
       return reply();
     }
@@ -67,16 +71,20 @@ function mock(opts = {}) {
     state.served++;
     return json(200, { served: true, hash }, { 'payment-response': b64({ success: true, transaction: hash, network: 'nano:mainnet' }) });
   });
-  return new Promise(resolve => server.listen(0, '127.0.0.1', () => resolve({ state, server, origin: 'http://127.0.0.1:' + server.address().port, close: () => new Promise(r => server.close(r)) })));
+  return new Promise(resolve => server.listen(0, '127.0.0.1', () => resolve({ state, server, origin: 'http://127.0.0.1:' + server.address().port, firstInfo, resumeInfo: () => { const reply = resumeFirstInfo; resumeFirstInfo = null; if (reply) reply(); }, close: () => new Promise(r => server.close(r)) })));
 }
 
 function run(origin, lockDir, env = {}) {
-  return new Promise(resolve => {
-    const child = spawn(process.execPath, [CLIENT, origin + '/buy'], { env: { PATH: process.env.PATH, NANO_SEED: SEED, API: origin, NANO_MAX_PAY: '0.001', NANO_LOCK_DIR: lockDir, ...env } });
+  let child;
+  const completion = new Promise(resolve => {
+    child = spawn(process.execPath, [CLIENT, origin + '/buy'], { env: { PATH: process.env.PATH, NANO_SEED: SEED, API: origin, NANO_MAX_PAY: '0.001', NANO_LOCK_DIR: lockDir, ...env } });
     let out = '', err = '';
     child.stdout.on('data', d => { out += d; }); child.stderr.on('data', d => { err += d; });
+    child.on('error', e => resolve({ code: null, out, err: err + e.message }));
     child.on('close', code => resolve({ code, out, err }));
   });
+  completion.cancel = () => { if (child && child.exitCode === null && child.signalCode === null) child.kill(); };
+  return completion;
 }
 const tmp = () => fs.mkdtempSync(path.join(os.tmpdir(), 'client-lock-'));
 const account = () => N.deriveAddress(N.derivePublicKey(N.deriveSecretKey(SEED, 0)), { useNanoPrefix: true });
@@ -141,22 +149,55 @@ test('a live holder past NANO_LOCK_WAIT_MS: exit 5, nothing signed, no paid call
   const r = await run(m.origin, dir, { NANO_LOCK_WAIT_MS: '400' });
   await m.close();
   assert.equal(r.code, 5);
+  assert.match(r.err, /waiting for the wallet lock/);
   assert.match(r.err, /waited 0 s for the wallet lock/);
   assert.doesNotMatch(r.err, /signed block/);
   assert.equal(m.state.paidCalls, 0); assert.equal(m.state.infoReplies, 0); assert.equal(m.state.probes, 1);
   assert.equal(fs.readFileSync(lockFile(dir), 'utf8').split(' ')[0], String(process.pid), 'a live holder\'s lock is left alone');
 });
 
-test('a stale holder is taken over: process gone, or held longer than NANO_LOCK_MAX_MS', async () => {
+test('a stale holder is taken over only when its process is gone', async () => {
   const m = await mock(); const dir = tmp();
   const gone = spawn(process.execPath, ['-e', '']); await new Promise(r => gone.on('close', r));
   fs.writeFileSync(lockFile(dir), gone.pid + ' ' + Date.now());
   const a = await run(m.origin, dir);
   assert.equal(a.code, 0); assert.match(a.err, /wallet lock .* is stale \(its process is gone\); taking it over/);
-  fs.writeFileSync(lockFile(dir), process.pid + ' ' + (Date.now() - 5000));
-  const b = await run(m.origin, dir, { NANO_LOCK_MAX_MS: '1000' });
   await m.close();
-  assert.equal(b.code, 0); assert.match(b.err, /has held it 5 s\); taking it over/);
-  assert.equal(m.state.served, 2);
+  assert.equal(m.state.served, 1);
   assert.equal(fs.existsSync(lockFile(dir)), false);
+});
+
+
+test('a live holder past NANO_LOCK_MAX_MS is refused immediately, keeps its lock, and can resume', { timeout: 15000 }, async t => {
+  const m = await mock({ pauseFirstInfo: true }); const dir = tmp();
+  const maxMs = 200;
+  const holder = run(m.origin, dir, { NANO_LOCK_MAX_MS: String(maxMs) });
+  let waiterRun;
+  t.after(async () => {
+    m.resumeInfo();
+    holder.cancel(); if (waiterRun) waiterRun.cancel();
+    await Promise.allSettled([holder, waiterRun].filter(Boolean));
+    m.server.closeAllConnections();
+    await m.close();
+  });
+    await Promise.race([m.firstInfo, holder.then(r => { throw new Error('holder exited before account_info: ' + r.err); })]);
+    // A owns the actual client lock, but has not received account info or signed.
+    const token = fs.readFileSync(lockFile(dir), 'utf8');
+    const [pid, at] = token.trim().split(' ');
+    await new Promise(r => setTimeout(r, Math.max(0, Number(at) + maxMs + 100 - Date.now())));
+    waiterRun = run(m.origin, dir, { NANO_LOCK_MAX_MS: String(maxMs), NANO_LOCK_WAIT_MS: '30000' });
+    const waiter = await waiterRun;
+    assert.equal(waiter.code, 5, waiter.err);
+    assert.ok(waiter.err.includes('live pid ' + pid), waiter.err);
+    assert.match(waiter.err, /for \d+ ms; NANO_LOCK_MAX_MS=200/);
+    assert.doesNotMatch(waiter.err, /waiting for the wallet lock|signed block|taking it over/);
+    assert.equal(fs.readFileSync(lockFile(dir), 'utf8'), token, 'the live holder still owns exactly the same lock');
+    assert.equal(m.state.probes, 2);
+    assert.equal(m.state.infoReplies, 0, 'the waiter did not reach account_info; A is still paused');
+    assert.equal(m.state.paidCalls, 0, 'no signed payment was sent');
+    m.resumeInfo();
+    const resumed = await holder;
+    assert.equal(resumed.code, 0, resumed.err);
+    assert.equal(m.state.served, 1); assert.equal(m.state.paidCalls, 1);
+    assert.equal(fs.existsSync(lockFile(dir)), false, 'A releases its own lock when it exits');
 });
