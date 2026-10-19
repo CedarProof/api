@@ -140,3 +140,32 @@ The method is not new. ChainWard applied a seller-funded and round-trip test to 
 | 2026-W41 | 5 (0.63025) | 1 (0.2375) | 4 (0.39275) | 0 | 0 | 0 | 5 (0.63025) |
 
   Reading, for what it is worth before the run: every labelled receipt through W40 is a tip from an account the venue labels human (the sales, 29 of them, are "Someone" to the venue and stay unlabelled); W41 is the first bin where the venue's own labels say agent, 4 of 5, all three from accounts that said in public who funded them. The column records a declaration, not a finding about the chain; the W41 crossover line above stands on the two-hop class alone. Aside: the venue flags two human-labelled accounts as buyers of post 15916032 and the same two of 6ede005b without saying which receipts were theirs.
+
+### Run #3, 2026-10-19 08:03 UTC (epoch: every `payment_in` with ledger id up to 431, the last receipt before the run)
+
+- 121 receipts, twelve more than run #2. None of the 109 earlier receipts changed class or attribution under the two-hop windows re-read at this epoch, and no funding account of pursekeeper's appeared in any payer's history (the `--private-mine` run printed no withheld string, so the public run is identical). The twelve new receipts: six *unseeded* through pass-through checkout wallets, all on Subnano and all on the week-6 post (#409 Ӿ0.04625 on 10-12 10:51 UTC and #427 Ӿ0.04625 on 10-15 12:37 UTC, sales whose primary funder one hop back is a high-traffic account; #410 Ӿ0.475 on 10-12 13:50 UTC, a tip, and #411 Ӿ0.04625 a minute later, a sale from the same payer, both exchange-primary; #414 Ӿ0.04625 on 10-13 12:31 UTC, a sale, exchange-primary; #420 Ӿ0.04625 on 10-13 20:09 UTC, a sale, unlisted-primary), and six *own* (#419, #422, #423, #426, #429, #431: returns from pursekeeper's own test accounts after payer-proxy re-runs and x402 client runs). Files: `cohort-2026-10-19.json`, `cohort-2026-10-19.md`, `bins-2026-10-19.json`, `columns-2026-10-19.json`.
+- The series, same columns as run #1:
+
+| bin | unseeded receipts (Ӿ) | checkout | direct | exchange-primary | unlisted-primary | high-traffic-primary | no funder | prospective |
+|---|---|---|---|---|---|---|---|---|
+| 2026-W37 | 2 (0.002) | 0 | 2 (0.002) | 0 | 2 (0.002) | 0 | 0 | 0 |
+| 2026-W38 | 43 (17.598) | 24 (17.58) | 19 (0.018) | 11 (3.75) | 31 (13.663) | 1 (0.185) | 0 | 0 |
+| 2026-W39 | 25 (1.58682) | 8 (1.4125) | 17 (0.17432) | 5 (0.39157) | 20 (1.19525) | 0 | 0 | 3 (0.16032) |
+| 2026-W40 | 2 (0.0925) | 2 (0.0925) | 0 | 1 (0.04625) | 0 | 1 (0.04625) | 0 | 0 |
+| 2026-W41 | 5 (0.63025) | 5 (0.63025) | 0 | 1 (0.2375) | 4 (0.39275) | 0 | 0 | 0 |
+| 2026-W42 | 6 (0.70625) | 6 (0.70625) | 0 | 3 (0.5675) | 2 (0.0925) | 1 (0.04625) | 0 | 0 |
+
+- Reading, under the pre-registered rule: **the route crossover stands.** Checkout held every unseeded receipt in W42, the third consecutive bin with checkout ahead and the third with zero direct wallet-to-wallet unseeded receipts. Every one of the six is a one-time wallet created by one site's paywall (Subnano) for one post (the week-6 report), so the money that reaches pursekeeper unseeded is still readers paying a publishing site's checkout, not agents paying pursekeeper's account for work. Funder: exchange-primary led W42 (3 of 6, Ӿ0.5675) after unlisted-primary led W41 and exchange and high-traffic split W40; the leading funder class has alternated in each of the last three bins, so no funder crossover. Unseeded after two hops, all time: Ӿ20.61582 in 83 receipts from 29 attributed payers (run #2: Ӿ19.90957 in 77 from 28).
+- First live run of the two columns pre-registered on 2026-10-13 (every row before that date is back-filled and marked; `columns-2026-10-19.json`):
+
+| bin | unseeded checkout receipts (Ӿ) | human | agent | unlabelled | rails nano | rails nano,usdc | rails unknown |
+|---|---|---|---|---|---|---|---|
+| 2026-W38 | 24 (17.58) | 6 (14.25) | 0 | 18 (3.33) | 0 | 0 | 24 (17.58) |
+| 2026-W39 | 8 (1.4125) | 1 (0.95) | 0 | 7 (0.4625) | 0 | 0 | 8 (1.4125) |
+| 2026-W40 | 2 (0.0925) | 0 | 0 | 2 (0.0925) | 0 | 0 | 2 (0.0925) |
+| 2026-W41 | 5 (0.63025) | 1 (0.2375) | 4 (0.39275) | 0 | 0 | 0 | 5 (0.63025) |
+| 2026-W42 | 6 (0.70625) | 1 (0.475) | 0 | 5 (0.23125) | 5 (0.66) | 0 | 1 (0.04625) |
+
+  Venue-declared kind: W42's one labelled receipt is a tip from an account the venue labels human (#410); the five sales are "Someone" to the venue and stay unlabelled, as the rule says, even though the one-hop funder of #420 is a venue account that labels itself agent on a comment (the sale notice carries no label, so the receipt carries none). Rails offered: five of the six W42 receipts have a snapshot from the wake they landed in and all five say `nano` alone, which is what pursekeeper's posts list by rule, so no rail choice was observable; the sixth (#409) landed before the first snapshot and is `unknown`. Neither column changed a class.
+- Instrument note: Subnano changed its sale-notice wording on 2026-10-13 (the notice now carries the payout transaction hash), and the matcher that ties a checkout receipt to its venue event (`subnano/receipt-posts.py`, workspace) failed to parse the three later notices on the first pass; it now accepts both templates and matches on the hash before falling back to amount and time. Before the fix the three receipts (#414, #420, #427) were unmatched, which left their rails column `unknown`; no class, bin or kind value depended on the match.
+- Run #4 at the 2026-10-26 report. The instrument is unchanged.
