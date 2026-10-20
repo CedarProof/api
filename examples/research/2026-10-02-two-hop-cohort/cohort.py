@@ -142,6 +142,15 @@ def classify(row):
         'other': 'pre-receipt inbound from accounts not paid by pursekeeper and not listed exchanges'}[sub])
     return out
 
+def repeats(pairs, keyf):
+    """Repeat payers over a set of (classified, ledger_row) pairs, keyed by keyf(classified).
+    Receipts per key and distinct UTC calendar days per key; a timer paying every few hours
+    scores high on receipts and low on days, which is why both are reported."""
+    rec = collections.defaultdict(list)
+    for r, row in pairs: rec[keyf(r)].append(r['ts'][:10])
+    return {'payers': len(rec), 'two_or_more_receipts': sum(1 for v in rec.values() if len(v) >= 2),
+            'two_or_more_days': sum(1 for v in rec.values() if len(set(v)) >= 2)}
+
 def main():
     max_id = int(arg('--max-id', 10**9)); outdir = arg('--out', HERE)
     rows = sorted([r for r in LEDGER if r['kind'] == 'payment_in' and r['id'] <= max_id and str(r['counterparty']).startswith('nano_')], key=lambda r: r['id'])
@@ -164,6 +173,8 @@ def main():
            'unseeded': agg(un),
            'unseeded_via_pass_through': agg([(r, row) for r, row in un if r['via']]),
            'unseeded_direct': agg([(r, row) for r, row in un if not r['via']]),
+           'repeat_payers': {'definition': 'over unseeded receipts; by_attributed keys on the account a pass-through wallet was funded by (the sender itself otherwise), by_wallet keys on the sender address; days are distinct UTC calendar days',
+                             'by_attributed': repeats(un, lambda r: r['attributed']), 'by_wallet': repeats(un, lambda r: r['payer'])},
            'rows': res}
     os.makedirs(outdir, exist_ok=True)
     stem = os.path.join(outdir, 'cohort-' + doc['generated_at'][:10])
@@ -172,9 +183,11 @@ def main():
           '| class | receipts | Ӿ | distinct attributed payers |', '|---|---:|---:|---:|'] + [f"| {k} | {v['receipts']} | {v['nano']} | {v['counterparties']} |" for k, v in tot.items()]
     for name in ('not_own_not_seeded_direct', 'unseeded', 'unseeded_via_pass_through', 'unseeded_direct'):
         v = doc[name]; md.append(f"- {name}: Ӿ{v['nano']} in {v['receipts']} receipts from {v['counterparties']} attributed payers ({v['counterparties_at_least_0_01']} at or above Ӿ0.01)")
+    rp = doc['repeat_payers']
+    md.append(f"- repeat_payers (unseeded): by attributed account {rp['by_attributed']['payers']} payers, {rp['by_attributed']['two_or_more_receipts']} with two or more receipts, {rp['by_attributed']['two_or_more_days']} on two or more calendar days; by checkout wallet {rp['by_wallet']['payers']} payers, {rp['by_wallet']['two_or_more_receipts']} with two or more receipts, {rp['by_wallet']['two_or_more_days']} on two or more days")
     md += ['', '| # | time | Ӿ | payer | via | attributed | class | why |', '|---|---|---:|---|---|---|---|---|']
     md += [f"| {r['id']} | {r['ts'][:16]}Z | {r['amount']} | {short(r['payer'])} | {short(r['via'])} | {short(r['attributed'])} | {key(r)} | {r['why']} |" for r in res]
     open(stem + '.md', 'w').write('\n'.join(md) + '\n')
-    print('\n'.join(md[:len(tot) + 9])); print('written', stem + '.json', stem + '.md')
+    print('\n'.join(md[:len(tot) + 10])); print('written', stem + '.json', stem + '.md')
 
 if __name__ == '__main__': main()
