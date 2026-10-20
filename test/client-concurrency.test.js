@@ -10,7 +10,8 @@
 // writer between the frontier read and the paid call: that block is dead, the client says so, the next writer continues;
 // (4) a lost reply after the block landed: the client reads the fate from the account and says re-present, and the
 // writers behind it continue; (5) a fresh live holder past NANO_LOCK_WAIT_MS: exit 5, nothing signed, nothing sent;
-// (6) a dead holder is taken over; (7) a live holder past NANO_LOCK_MAX_MS is never taken over, and can resume safely.
+// (6) a dead holder is taken over; (7) a live holder past NANO_LOCK_MAX_MS is never taken over, and can resume safely;
+// (8) an empty or invalid-PID record is polled until NANO_LOCK_WAIT_MS, left in place, and never permits a signed payment.
 'use strict';
 const test = require('node:test');
 const assert = require('node:assert/strict');
@@ -201,3 +202,39 @@ test('a live holder past NANO_LOCK_MAX_MS is refused immediately, keeps its lock
     assert.equal(m.state.served, 1); assert.equal(m.state.paidCalls, 1);
     assert.equal(fs.existsSync(lockFile(dir)), false, 'A releases its own lock when it exits');
 });
+
+
+for (const [label, record] of [
+  ['empty', ''],
+  ['truncated whitespace', ' \n'],
+  ['foreign', 'owner=another-tool'],
+  ['non-integer PID', '1.5 0'],
+  ['out-of-range PID', '2147483648 0'],
+]) {
+  test('a lock with an ' + label + ' record waits, exits 5 unsigned, and remains untouched', { timeout: 10000 }, async t => {
+    const m = await mock(); const dir = tmp(); const file = lockFile(dir);
+    let waiter;
+    t.after(async () => {
+      if (waiter) { waiter.cancel(); await waiter; }
+      m.server.closeAllConnections();
+      await m.close();
+      fs.rmSync(dir, { recursive: true, force: true });
+    });
+    fs.writeFileSync(file, record);
+    // A tiny MAX must not turn unknown ownership into a live-holder refusal or a stale takeover.
+    waiter = run(m.origin, dir, { NANO_LOCK_WAIT_MS: '400', NANO_LOCK_MAX_MS: '1' });
+    const r = await waiter;
+    assert.equal(r.code, 5, r.err);
+    assert.match(r.err, /waiting for the wallet lock/);
+    assert.match(r.err, /refusing: waited .*no PID available/);
+    assert.ok(r.err.includes(file), 'the refusal names the lock file for inspection');
+    assert.match(r.err, /Nothing signed/);
+    assert.match(r.err, /Check for running clients.*only if none are running, manually remove this lock file/);
+    assert.doesNotMatch(r.err, /signed block|taking it over|held by live pid/);
+    assert.equal(m.state.probes, 1);
+    assert.equal(m.state.infoReplies, 0, 'the client never reached account_info');
+    assert.equal(m.state.paidCalls, 0, 'the client never sent a signed payment');
+    assert.equal(m.state.served, 0); assert.equal(m.state.landed, 0);
+    assert.equal(fs.readFileSync(file, 'utf8'), record, 'the lock remains byte-for-byte unchanged');
+  });
+}
