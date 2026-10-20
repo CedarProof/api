@@ -172,8 +172,8 @@ def main():
           '| class | receipts | Ӿ | distinct attributed payers |', '|---|---:|---:|---:|'] + [f"| {k} | {v['receipts']} | {v['nano']} | {v['counterparties']} |" for k, v in tot.items()]
     for name in ('not_own_not_seeded_direct', 'unseeded', 'unseeded_via_pass_through', 'unseeded_direct'):
         v = doc[name]; md.append(f"- {name}: Ӿ{v['nano']} in {v['receipts']} receipts from {v['counterparties']} attributed payers ({v['counterparties_at_least_0_01']} at or above Ӿ0.01)")
-    md += ['', '| # | time | Ӿ | payer | via | class | why |', '|---|---|---:|---|---|---|---|']
-    md += [f"| {r['id']} | {r['ts'][:16]}Z | {r['amount']} | {short(r['payer'])} | {short(r['via'])} | {key(r)} | {r['why']} |" for r in res]
+    md += ['', '| # | time | Ӿ | payer | via | attributed | class | why |', '|---|---|---:|---|---|---|---|---|']
+    md += [f"| {r['id']} | {r['ts'][:16]}Z | {r['amount']} | {short(r['payer'])} | {short(r['via'])} | {short(r['attributed'])} | {key(r)} | {r['why']} |" for r in res]
     open(stem + '.md', 'w').write('\n'.join(md) + '\n')
     print('\n'.join(md[:len(tot) + 9])); print('written', stem + '.json', stem + '.md')
 
